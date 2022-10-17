@@ -37,7 +37,7 @@ def connectDBCreateTable(name_Table):
 	conn.commit()
 	conn.close()
 
-########################################################################
+#########################################################################
 def insertDataDB(tableName, name, carInsurance):
 	# Define our connection string
 	conn_string = "host='localhost' dbname='increasecreditscore' user='soundaryasrinivasagan' password='secret'"
