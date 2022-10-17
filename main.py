@@ -1,4 +1,3 @@
-
 # Author: Soundarya Srinivasagan
 # Date: October 16th, 2022
 # Project: increaseCreditScore
@@ -8,7 +7,7 @@
 import psycopg2
 import sys
 
-def main():
+def connectDBCreateTable(name_Table):
 	# Define our connection string
 	conn_string = "host='localhost' dbname='increasecreditscore' user='soundaryasrinivasagan' password='secret'"
 
@@ -16,11 +15,37 @@ def main():
 	conn = psycopg2.connect(conn_string)
 
 	# conn.cursor will return a cursor object, you can use this cursor to perform queries
+	conn.autocommit = True
 	cursor = conn.cursor()
-	sql = ''' CREATE TABLE increasecreditscore.test(); '''
-	sql1 = ''' SELECT *  from increasecreditscore.test; '''
+
+	# Create table statement
+	sqlCreateTable = "create table " + name_Table + " (id bigint, title varchar(128), summary varchar(256), story text);"
+
+	# Create a table in PostgreSQL database
+	cursor.execute(sqlCreateTable)
+	conn.commit()
+
+	# This prints out all the columns in the table
+	sql= """ SELECT * FROM """ + name_Table + """ ; """
 	cursor.execute(sql)
-	print(cursor.execute(sql1))
+	column_names = [desc[0] for desc in cursor.description]
+
+	for i in column_names:
+		print(i)
+
+	# Close the connection
+	conn.commit()
+	conn.close()
 
 if __name__ == "__main__":
-	main()
+	# Future version: check for invalid characters as input
+	val = input("Is this your first time running this program: [yes | no] ")
+	if ("yes" in val):
+		val_tableName = input("Please enter your Table Name: ")
+		# Run this statement once to initialize, need to find more permanent solution
+		connectDBCreateTable(val_tableName)
+
+	elif("no" in val):
+		print("no")
+
+
