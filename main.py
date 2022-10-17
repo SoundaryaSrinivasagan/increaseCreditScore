@@ -1,4 +1,3 @@
-
 # Author: Soundarya Srinivasagan
 # Date: October 16th, 2022
 # Project: increaseCreditScore
@@ -7,20 +6,34 @@
 
 import psycopg2
 import sys
+import pandas
 
-def main():
-	# Define our connection string
-	conn_string = "host='localhost' dbname='increasecreditscore' user='soundaryasrinivasagan' password='secret'"
+# Define our connection string
+conn_string = "host='localhost' dbname='increasecreditscore' user='soundaryasrinivasagan' password='secret'"
 
-	# Get a connection, if a connection cannot be made, an exception will be raised here
-	conn = psycopg2.connect(conn_string)
+# Get a connection, if a connection cannot be made, an exception will be raised here
+conn = psycopg2.connect(conn_string)
 
-	# conn.cursor will return a cursor object, you can use this cursor to perform queries
-	cursor = conn.cursor()
-	#sql = ''' CREATE TABLE increasecreditscore.test(); '''
-	#sql1 = ''' SELECT *  from increasecreditscore.test; '''
-	cursor.execute(sql)
-	print(cursor.execute(sql1))
+# conn.cursor will return a cursor object, you can use this cursor to perform queries
+conn.autocommit = True
+cursor = conn.cursor()
 
-if __name__ == "__main__":
-	main()
+name_Table = "news_stories12"
+
+# Create table statement
+#sqlCreateTable = "create table " + name_Table + " (id bigint, title varchar(128), summary varchar(256), story text);"
+
+# Create a table in PostgreSQL database
+#cursor.execute(sqlCreateTable)
+#conn.commit()
+
+sql= """ SELECT * FROM news_stories1; """
+
+cursor.execute(sql)
+column_names = [desc[0] for desc in cursor.description]
+
+for i in column_names:
+    print(i)
+
+conn.commit()
+conn.close()
