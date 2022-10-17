@@ -19,7 +19,7 @@ def connectDBCreateTable(name_Table):
 	cursor = conn.cursor()
 
 	# Create table statement
-	sqlCreateTable = "create table " + name_Table + " (id text, carInsurance int);"
+	sqlCreateTable = "create table " + name_Table + " (id text, carInsurance int, gym int, internet int, phone int, loans int);"
 
 	# Create a table in PostgreSQL database
 	cursor.execute(sqlCreateTable)
@@ -38,7 +38,7 @@ def connectDBCreateTable(name_Table):
 	conn.close()
 
 #########################################################################
-def insertDataDB(tableName, name, carInsurance):
+def insertDataDB(tableName, name, carInsurance, gym, internet, phone, loans):
 	# Define our connection string
 	conn_string = "host='localhost' dbname='increasecreditscore' user='soundaryasrinivasagan' password='secret'"
 
@@ -49,8 +49,10 @@ def insertDataDB(tableName, name, carInsurance):
 	conn.autocommit = True
 	cursor = conn.cursor()
 
-	postgres_insert_query = """ INSERT INTO """ + tableName + """(id, carInsurance) VALUES ( """ + """ \' """ + name + """ \', """ + """ \' """  + carInsurance + """ \' """ + """)"""
-	#record_to_insert = (name)
+	#VALUES(""" + """ \' """ + name + """ \', """ + """ \' """  + carInsurance + """ \' """ + """)"""
+
+	postgres_insert_query = """ INSERT INTO """ + tableName + """(id, carInsurance, gym, internet, phone, loans) 
+	                            VALUES ( """ + """ \' """ + name + """ \', """ + """ \' """  + carInsurance + """ \', """ + """ \' """ + gym + """ \', """ + """ \' """ + internet + """ \', """ + """ \' """ + phone + """ \', """ + """ \' """ + loans + """ \' """ + """)"""
 	cursor.execute(postgres_insert_query)
 
 	# Print out the values in the table
@@ -60,13 +62,17 @@ def insertDataDB(tableName, name, carInsurance):
 	for result in results:
 		print("Id = ", result[0], )
 		print("Car Insurance = ", result[1])
+		print("Gym = ", result[2])
+		print("Internet = ", result[3])
+		print("Phone = ", result[4])
+		print("Loans = ", result[5])
 
 
 if __name__ == "__main__":
 	# Future version: check for invalid characters as input
 	val = input("Is this your first time running this program: [yes | no] ")
 	if ("yes" in val):
-		print("yes")
+		print("process")
 	elif("no" in val):
 		print("no")
 
@@ -77,12 +83,17 @@ if __name__ == "__main__":
 
 	val_tableName = input("Please enter your Table Name: ")
 	val_userName = input("What is your name: ")
-	print('Please enter the following information, if you do not have something that was asked, enter 0')
+	print('Please enter the following information (per month), if you do not have something that was asked, enter 0')
 	print('For example, if you do not have car insurance, enter 0 when prompted', "\n")
-	val_carInsurance = input("What is the amount for your Car Insurance: [Round up]  ")
 
+	val_carInsurance = input("What is the monthly amount that you pay for your car insurance: [Round up]  ")
+	val_gym = input("What is the monthly amount that you pay for your gym membership: [Round up]  ")
+	val_internet = input("What is the monthly amount that you pay for your internet: [Round up]  ")
+	val_phone = input("What is the monthly amount that you pay for your phone plan: [Round up]  ")
+	val_loans = input("What is the monthly amount that you pay for any loans (OSAP/PERSONAL): [Round up]  ")
 
 	# Run this statement once to initialize, need to find more permanent solution
 	connectDBCreateTable(val_tableName)
 
-	insertDataDB(val_tableName, val_userName, val_carInsurance)
+	# Insert values from user into Database
+	insertDataDB(val_tableName, val_userName, val_carInsurance,val_gym, val_internet, val_phone, val_loans)
