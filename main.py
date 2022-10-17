@@ -5,8 +5,8 @@
 # Description: This script will help the user strategize their income to effectively increase credit score
 
 import psycopg2
-import sys
 
+########################################################################
 def connectDBCreateTable(name_Table):
 	# Define our connection string
 	conn_string = "host='localhost' dbname='increasecreditscore' user='soundaryasrinivasagan' password='secret'"
@@ -19,7 +19,7 @@ def connectDBCreateTable(name_Table):
 	cursor = conn.cursor()
 
 	# Create table statement
-	sqlCreateTable = "create table " + name_Table + " (id bigint, title varchar(128), summary varchar(256), story text);"
+	sqlCreateTable = "create table " + name_Table + " (id text, carInsurance int);"
 
 	# Create a table in PostgreSQL database
 	cursor.execute(sqlCreateTable)
@@ -37,15 +37,52 @@ def connectDBCreateTable(name_Table):
 	conn.commit()
 	conn.close()
 
+########################################################################
+def insertDataDB(tableName, name, carInsurance):
+	# Define our connection string
+	conn_string = "host='localhost' dbname='increasecreditscore' user='soundaryasrinivasagan' password='secret'"
+
+	# Get a connection, if a connection cannot be made, an exception will be raised here
+	conn = psycopg2.connect(conn_string)
+
+	# conn.cursor will return a cursor object, you can use this cursor to perform queries
+	conn.autocommit = True
+	cursor = conn.cursor()
+
+	postgres_insert_query = """ INSERT INTO """ + tableName + """(id, carInsurance) VALUES ( """ + """ \' """ + name + """ \', """ + """ \' """  + carInsurance + """ \' """ + """)"""
+	#record_to_insert = (name)
+	cursor.execute(postgres_insert_query)
+
+	# Print out the values in the table
+	cursor.execute(""" SELECT * FROM """ + tableName + """;""")
+	conn.commit()
+	results = cursor.fetchall()
+	for result in results:
+		print("Id = ", result[0], )
+		print("Car Insurance = ", result[1])
+
+
 if __name__ == "__main__":
 	# Future version: check for invalid characters as input
 	val = input("Is this your first time running this program: [yes | no] ")
 	if ("yes" in val):
-		val_tableName = input("Please enter your Table Name: ")
-		# Run this statement once to initialize, need to find more permanent solution
-		connectDBCreateTable(val_tableName)
-
+		print("yes")
 	elif("no" in val):
 		print("no")
 
+	print("******************************************************************")
+	print("Welcome to increaseCreditScore")
+	print("Tool Description")
+	print("******************************************************************")
 
+	val_tableName = input("Please enter your Table Name: ")
+	val_userName = input("What is your name: ")
+	print('Please enter the following information, if you do not have something that was asked, enter 0')
+	print('For example, if you do not have car insurance, enter 0 when prompted', "\n")
+	val_carInsurance = input("What is the amount for your Car Insurance: [Round up]  ")
+
+
+	# Run this statement once to initialize, need to find more permanent solution
+	connectDBCreateTable(val_tableName)
+
+	insertDataDB(val_tableName, val_userName, val_carInsurance)
