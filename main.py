@@ -17,8 +17,8 @@ def main():
 
 	# conn.cursor will return a cursor object, you can use this cursor to perform queries
 	cursor = conn.cursor()
-	sql = ''' CREATE TABLE increasecreditscore.test(); '''
-	sql1 = ''' SELECT *  from increasecreditscore.test; '''
+	#sql = ''' CREATE TABLE increasecreditscore.test(); '''
+	#sql1 = ''' SELECT *  from increasecreditscore.test; '''
 	cursor.execute(sql)
 	print(cursor.execute(sql1))
 
