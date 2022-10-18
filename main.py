@@ -151,15 +151,14 @@ if __name__ == "__main__":
 		val_other_amount = input("What is the monthly amount that you pay for " + val_other + ": ")
 		val_other1 = input("Do you have anymore payments: [yes | no]  ")
 
-		# Insert values from user into Database
-		insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans, val_other1)
+		# Insert values from user into Database (for other payments)
+		# insertDataDBOtherPayments(val_tableName)
 
 		while ('yes' in val_other1):
 			val_other = input("Please enter the name of the payment: ")
 			val_other_amount = input("What is the monthly amount that you pay for " + val_other + ": ")
 			val_other1 = input("Do you have anymore payments: [yes | no]  ")
-	elif('no' in val_other):
-		print('continue')
 
-	# Insert values from user into Database
-	# insertDataDB(val_tableName, val_userName, val_carInsurance,val_gym, val_internet, val_phone, val_loans)
+	elif('no' in val_other):
+		# Insert values from user into Database
+		insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
