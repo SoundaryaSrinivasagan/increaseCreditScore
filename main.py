@@ -21,11 +21,11 @@ def connectToDB():
 	return cursor
 
 ########################################################################
-def connectDBCreateTable(name_Table, userName, dictOfValues):
+def connectDBCreateTable(name_Table, dictOfValues):
 	local_cursor = connectToDB()
 
 	# Create table statement
-	sqlCreateTable1 = """ create table """ + name_Table
+	sqlCreateTable1 = """ CREATE TABLE """ + name_Table
 	sqlCreateTable2 = """ (id text, carInsurance int, gym int, internet int, phone int, loans int, """
 
 	key = list(dictOfValues.keys())
@@ -98,7 +98,32 @@ def printValuesInTable():
 		print("Loans = ", result[5])
 
 #########################################################################
-def query_billsCollect_firstTime(val_tableName, val_userName):
+def alterTableToAddMoreColumns(flag):
+	local_cursor = connectToDB()
+
+	val_other = input("Please enter the name of the payment:  ")
+	val_other_amount = input("What is the monthly amount that you pay for " + val_other + ": [Round up]  ")
+	print("\n")
+	otherItemsList.update({val_other : val_other_amount})
+	val_other1 = input("Do you have anymore payments: [yes | no]  ")
+
+	while ('yes' in val_other1):
+		val_other = input("Please enter the name of the payment: ")
+		val_other_amount = input("What is the monthly amount that you pay for " + val_other + ": [Round up]  ")
+		print("\n")
+		otherItemsList.update({val_other : val_other_amount})
+		val_other1 = input("Do you have anymore payments: [yes | no]  ")
+
+
+	local_cursor.execute(postgres_insert_query)
+
+
+#########################################################################
+def query_billsCollect_firstTime(val_tableName, val_userName, flag):
+	# Dictionary to add all other types of payments
+	otherItemsList = {}
+
+	print("\n")
 	print('Please enter the following information (per month), if you do not have something that was asked, enter 0')
 	print('For example, if you do not have car insurance, enter 0 when prompted', "\n")
 
@@ -106,15 +131,16 @@ def query_billsCollect_firstTime(val_tableName, val_userName):
 	val_gym = input("What is the monthly amount that you pay for your gym membership: [Round up]  ")
 	val_internet = input("What is the monthly amount that you pay for your internet: [Round up]  ")
 	val_phone = input("What is the monthly amount that you pay for your phone plan: [Round up]  ")
-	val_loans = input("What is the monthly amount that you pay for any loans (OSAP/PERSONAL): [Round up]  ")
+	val_loans = input("What is the monthly amount that you pay for any educational loans (OSAP): [Round up]  ")
 	print("\n")
 
 	val_other = input ("Do you have any other monthly payments on your credit card: [yes | no] ")
 
-	# Dictionary to add all other types of payments
-	otherItemsList = {}
+	if (('yes' in val_other) and (flag == False)):
+		alterTableToAddMoreColumns(False)
+		print("\n")
 
-	if ('yes' in val_other):
+	elif ('yes' in val_other):
 		val_other = input("Please enter the name of the payment:  ")
 		val_other_amount = input("What is the monthly amount that you pay for " + val_other + ": [Round up]  ")
 		print("\n")
@@ -128,24 +154,50 @@ def query_billsCollect_firstTime(val_tableName, val_userName):
 			otherItemsList.update({val_other : val_other_amount})
 			val_other1 = input("Do you have anymore payments: [yes | no]  ")
 
-		# Run this statement once to initialize, need to find more permanent solution
-		connectDBCreateTable(val_tableName, val_userName, otherItemsList)
+		# See if a new table is necessary
+		if (flag == True):
+			# Run this statement once to initialize, need to find more permanent solution
+			connectDBCreateTable(val_tableName, otherItemsList)
 
-		# Insert values from user into Database
-		insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
+			# Insert values from user into Database
+			insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
 
-		# Insert values from user into Database (for other payments)
-		insertDataDBOtherPayments(val_tableName, val_userName, otherItemsList)
+			# Insert values from user into Database (for other payments)
+			insertDataDBOtherPayments(val_tableName, val_userName, otherItemsList)
+
+			print("\n")
+
+		elif (flag == False):
+			# Insert values from user into Database
+			insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
+
+			# Insert values from user into Database (for other payments)
+			insertDataDBOtherPayments(val_tableName, val_userName, otherItemsList)
+
+			print("\n")
 
 	elif('no' in val_other):
-		# Run this statement once to initialize, need to find more permanent solution
-		connectDBCreateTable(val_tableName, val_userName, otherItemsList)
+		# See if a new table is necessary
+		if (flag == True):
+			# Run this statement once to initialize, need to find more permanent solution
+			connectDBCreateTable(val_tableName, otherItemsList)
 
-		# Insert values from user into Database
-		insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
+			# Insert values from user into Database
+			insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
+
+			# Insert values from user into Database (for other payments)
+			insertDataDBOtherPayments(val_tableName, val_userName, otherItemsList)
+
+			print("\n")
+
+		elif (flag == False):
+			# Insert values from user into Database
+			insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
+
+			print("\n")
+
 
 #########################################################################
-
 if __name__ == "__main__":
 
 	print("**********************************************************************************")
@@ -156,13 +208,22 @@ if __name__ == "__main__":
 	# Future version: check for invalid characters as input
 	val = input("Is this your first time running this program: [yes | no] ")
 	if ("yes" in val):
-		val_tableName = input("Please enter your Table Name: ")
+		val_tableName = input("Please enter your Group Name: ")
 		val_userName = input("What is your name: ")
-		query_billsCollect_firstTime(val_tableName, val_userName)
+		query_billsCollect_firstTime(val_tableName, val_userName, True)
 
 	elif("no" in val):
-		val_tableName = input("Please enter your Table Name: ")
-		val_userName = input("What is your name: ")
+		val_tableName = input("Please enter your Group Name: ")
+		val_decide = input("Do you want to update amount for bill payments [1] or Add user to your Family Table [2]: [ 1 | 2 ]  ")
+		if ("1" in val_decide):
+			val_userName = input("What is your name: ")
+			val_update = input("What payment would you like to update: ")
+
+		elif ("2" in val_decide):
+			val_userName = input("What is your name: ")
+			# This will not create a new group and add val_username to the same group
+			query_billsCollect_firstTime(val_tableName, val_userName, False)
+
 
 
 
