@@ -45,17 +45,6 @@ def connectDBCreateTable(name_Table, userName, dictOfValues):
 	# Create a table in PostgreSQL database
 	cursor.execute(sqlCreateTable)
 	conn.commit()
-
-	# This prints out all the columns in the table
-	sql= """ SELECT * FROM """ + name_Table + """ ; """
-	cursor.execute(sql)
-	column_names = [desc[0] for desc in cursor.description]
-
-	#for i in column_names:
-		#print(i)
-
-	# Close the connection
-	conn.commit()
 	conn.close()
 
 #########################################################################
@@ -74,20 +63,8 @@ def insertDataDB(tableName, name, carInsurance, gym, internet, phone, loans):
 	                            VALUES ( """ + """ \' """ + name + """ \', """ + """ \' """  + carInsurance + """ \', """ + """ \' """ + gym + """ \', """ + """ \' """ + internet + """ \', """ + """ \' """ + phone + """ \', """ + """ \' """ + loans + """ \' """ + """)"""
 	cursor.execute(postgres_insert_query)
 
-	# Print out the values in the table
-	cursor.execute(""" SELECT * FROM """ + tableName + """;""")
-	conn.commit()
-	results = cursor.fetchall()
-	for result in results:
-		print("Id = ", result[0], )
-		print("Car Insurance = ", result[1])
-		print("Gym = ", result[2])
-		print("Internet = ", result[3])
-		print("Phone = ", result[4])
-		print("Loans = ", result[5])
-
 #########################################################################
-def insertDataDBOtherPayments(tableName, id, dictOfValues):
+def insertDataDBOtherPayments(tableName, user, dictOfValues):
 	conn_string = "host='localhost' dbname='increasecreditscore' user='soundaryasrinivasagan' password='secret'"
 
 	# Get a connection, if a connection cannot be made, an exception will be raised here
@@ -97,64 +74,26 @@ def insertDataDBOtherPayments(tableName, id, dictOfValues):
 	conn.autocommit = True
 	cursor = conn.cursor()
 
-	# UPDATE bike SET full_day = 10 WHERE id = id;
-	postgres_insert_query_1 = """ Update """ + tableName
-
-
-	postgres_insert_query_1 = """ INSERT INTO """ + tableName
-
-	# Configuring what columns to put the data in
-	postgres_insert_query_20 = """ ( """
-	postgres_insert_query_21 = """  """
-
 	key = list(dictOfValues.keys())
 	lastElement = key[-1]
 	# print(lastElement)
 
-	for keys in dictOfValues:
-		part2 = keys
-		if (keys == lastElement):
-			part31 = """  """
-			postgres_insert_query_21 = postgres_insert_query_21 + part2 + part31
-		else:
-			part32 = """ , """
-			postgres_insert_query_21 = postgres_insert_query_21 + part2 + part32
-
-	postgres_insert_query_22 = """ ) """
-	postgres_insert_query_2 = postgres_insert_query_20 + postgres_insert_query_21 + postgres_insert_query_22
-
-	#########-------------------------------------------------------------------------------------------------
-
-	# Configuring the values for the respective columns
-	postgres_insert_query_30 = """ VALUES ( """
-	postgres_insert_query_31 = """  """
-
+	# Use Update statement so that the same row could be updated
+	postgres_insert_query_1T = """ UPDATE """ + tableName + """ SET """
+	postgres_insert_query_2T = """  """
+	postgres_insert_query_3T = """  WHERE id = """ + """ ' """ + user + """ ' """
+	postgres_insert_query_4T = """ ; """
 	for keys, values in dictOfValues.items():
-		part41 = """ \' """
-		part4 = values
+		part1 = """ = """
 		if (keys == lastElement):
-			part42 = """ \' """
-			postgres_insert_query_31 = postgres_insert_query_31 + part41 + part4 + part42
+			part4 = """  """
+			postgres_insert_query_2T = postgres_insert_query_2T + keys + part1 + values + part4
 		else:
-			part43 = """ \', """
-			postgres_insert_query_31 = postgres_insert_query_31 + part41 + part4 + part43
+			part4 = """ , """
+			postgres_insert_query_2T = postgres_insert_query_2T + keys + part1 + values + part4
 
-	postgres_insert_query_32 = """ ) """
-	postgres_insert_query_3 = postgres_insert_query_30 + postgres_insert_query_31 + postgres_insert_query_32
-
-	cursor.execute(postgres_insert_query_1 + postgres_insert_query_2 + postgres_insert_query_3)
-
-	# Print out the values in the table
-	cursor.execute(""" SELECT * FROM """ + tableName + """;""")
-	conn.commit()
-	results = cursor.fetchall()
-	for result in results:
-		print("Id = ", result[0], )
-		print("Car Insurance = ", result[1])
-		print("Gym = ", result[2])
-		print("Internet = ", result[3])
-		print("Phone = ", result[4])
-		print("Loans = ", result[5])
+	postgres_insert_query = postgres_insert_query_1T + postgres_insert_query_2T + postgres_insert_query_3T + postgres_insert_query_4T
+	cursor.execute(postgres_insert_query)
 
 #########################################################################
 # Print values in table
