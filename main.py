@@ -147,6 +147,7 @@ if __name__ == "__main__":
 	val_other = input ("Do you have any other monthly payments on your credit card: [yes | no] ")
 
 	if ('yes' in val_other):
+		otherItemsList = []
 		val_other = input("Please enter the name of the payment: ")
 		val_other_amount = input("What is the monthly amount that you pay for " + val_other + ": ")
 		val_other1 = input("Do you have anymore payments: [yes | no]  ")
@@ -158,6 +159,10 @@ if __name__ == "__main__":
 			val_other = input("Please enter the name of the payment: ")
 			val_other_amount = input("What is the monthly amount that you pay for " + val_other + ": ")
 			val_other1 = input("Do you have anymore payments: [yes | no]  ")
+
+		# Insert values from user into Database
+		insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
+
 
 	elif('no' in val_other):
 		# Insert values from user into Database
