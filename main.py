@@ -7,7 +7,7 @@
 import psycopg2
 
 ########################################################################
-def connectDBCreateTable(name_Table, userName, dictOfValues):
+def connectToDB():
 	# Define our connection string
 	conn_string = "host='localhost' dbname='increasecreditscore' user='soundaryasrinivasagan' password='secret'"
 
@@ -18,13 +18,18 @@ def connectDBCreateTable(name_Table, userName, dictOfValues):
 	conn.autocommit = True
 	cursor = conn.cursor()
 
+	return cursor
+
+########################################################################
+def connectDBCreateTable(name_Table, userName, dictOfValues):
+	local_cursor = connectToDB()
+
 	# Create table statement
 	sqlCreateTable1 = """ create table """ + name_Table
 	sqlCreateTable2 = """ (id text, carInsurance int, gym int, internet int, phone int, loans int, """
 
 	key = list(dictOfValues.keys())
 	lastElement = key[-1]
-	# print(lastElement)
 
 	part = """  """
 	for keys in dictOfValues:
@@ -43,40 +48,22 @@ def connectDBCreateTable(name_Table, userName, dictOfValues):
 	sqlCreateTable = sqlCreateTable1 + sqlCreateTable2 + sqlCreateTable3 + sqlCreateTable4
 
 	# Create a table in PostgreSQL database
-	cursor.execute(sqlCreateTable)
-	conn.commit()
-	conn.close()
+	local_cursor.execute(sqlCreateTable)
 
 #########################################################################
 def insertDataDB(tableName, name, carInsurance, gym, internet, phone, loans):
-	# Define our connection string
-	conn_string = "host='localhost' dbname='increasecreditscore' user='soundaryasrinivasagan' password='secret'"
-
-	# Get a connection, if a connection cannot be made, an exception will be raised here
-	conn = psycopg2.connect(conn_string)
-
-	# conn.cursor will return a cursor object, you can use this cursor to perform queries
-	conn.autocommit = True
-	cursor = conn.cursor()
-
+	local_cursor = connectToDB()
 	postgres_insert_query = """ INSERT INTO """ + tableName + """(id, carInsurance, gym, internet, phone, loans) 
 	                            VALUES ( """ + """ \' """ + name + """ \', """ + """ \' """  + carInsurance + """ \', """ + """ \' """ + gym + """ \', """ + """ \' """ + internet + """ \', """ + """ \' """ + phone + """ \', """ + """ \' """ + loans + """ \' """ + """)"""
-	cursor.execute(postgres_insert_query)
+
+	local_cursor.execute(postgres_insert_query)
 
 #########################################################################
 def insertDataDBOtherPayments(tableName, user, dictOfValues):
-	conn_string = "host='localhost' dbname='increasecreditscore' user='soundaryasrinivasagan' password='secret'"
-
-	# Get a connection, if a connection cannot be made, an exception will be raised here
-	conn = psycopg2.connect(conn_string)
-
-	# conn.cursor will return a cursor object, you can use this cursor to perform queries
-	conn.autocommit = True
-	cursor = conn.cursor()
+	local_cursor = connectToDB()
 
 	key = list(dictOfValues.keys())
 	lastElement = key[-1]
-	# print(lastElement)
 
 	# Use Update statement so that the same row could be updated
 	postgres_insert_query_1T = """ UPDATE """ + tableName + """ SET """
@@ -93,22 +80,15 @@ def insertDataDBOtherPayments(tableName, user, dictOfValues):
 			postgres_insert_query_2T = postgres_insert_query_2T + keys + part1 + values + part4
 
 	postgres_insert_query = postgres_insert_query_1T + postgres_insert_query_2T + postgres_insert_query_3T + postgres_insert_query_4T
-	cursor.execute(postgres_insert_query)
+
+	local_cursor.execute(postgres_insert_query)
 
 #########################################################################
 # Print values in table
 def printValuesInTable():
-	# Define our connection string
-	conn_string = "host='localhost' dbname='increasecreditscore' user='soundaryasrinivasagan' password='secret'"
+	local_cursor = connectToDB()
 
-	# Get a connection, if a connection cannot be made, an exception will be raised here
-	conn = psycopg2.connect(conn_string)
-
-	# conn.cursor will return a cursor object, you can use this cursor to perform queries
-	conn.autocommit = True
-	cursor = conn.cursor()
-
-	results = cursor.fetchall()
+	results = local_cursor.fetchall()
 	for result in results:
 		print("Id = ", result[0], )
 		print("Car Insurance = ", result[1])
@@ -118,23 +98,7 @@ def printValuesInTable():
 		print("Loans = ", result[5])
 
 #########################################################################
-#########################################################################
-
-if __name__ == "__main__":
-	# Future version: check for invalid characters as input
-	val = input("Is this your first time running this program: [yes | no] ")
-	if ("yes" in val):
-		print("process")
-	elif("no" in val):
-		print("no")
-
-	print("******************************************************************")
-	print("Welcome to increaseCreditScore")
-	print("Tool Description")
-	print("******************************************************************")
-
-	val_tableName = input("Please enter your Table Name: ")
-	val_userName = input("What is your name: ")
+def query_billsCollect_firstTime(val_tableName, val_userName):
 	print('Please enter the following information (per month), if you do not have something that was asked, enter 0')
 	print('For example, if you do not have car insurance, enter 0 when prompted', "\n")
 
@@ -143,7 +107,8 @@ if __name__ == "__main__":
 	val_internet = input("What is the monthly amount that you pay for your internet: [Round up]  ")
 	val_phone = input("What is the monthly amount that you pay for your phone plan: [Round up]  ")
 	val_loans = input("What is the monthly amount that you pay for any loans (OSAP/PERSONAL): [Round up]  ")
-	print( "\n")
+	print("\n")
+
 	val_other = input ("Do you have any other monthly payments on your credit card: [yes | no] ")
 
 	# Dictionary to add all other types of payments
@@ -163,9 +128,6 @@ if __name__ == "__main__":
 			otherItemsList.update({val_other : val_other_amount})
 			val_other1 = input("Do you have anymore payments: [yes | no]  ")
 
-		# Verify items in the dict
-		# print(otherItemsList)
-
 		# Run this statement once to initialize, need to find more permanent solution
 		connectDBCreateTable(val_tableName, val_userName, otherItemsList)
 
@@ -181,3 +143,26 @@ if __name__ == "__main__":
 
 		# Insert values from user into Database
 		insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
+
+#########################################################################
+
+if __name__ == "__main__":
+
+	print("**********************************************************************************")
+	print("Welcome to increaseCreditScore")
+	print("Tool Description")
+	print("**********************************************************************************")
+
+	# Future version: check for invalid characters as input
+	val = input("Is this your first time running this program: [yes | no] ")
+	if ("yes" in val):
+		val_tableName = input("Please enter your Table Name: ")
+		val_userName = input("What is your name: ")
+		query_billsCollect_firstTime(val_tableName, val_userName)
+
+	elif("no" in val):
+		val_tableName = input("Please enter your Table Name: ")
+		val_userName = input("What is your name: ")
+
+
+
