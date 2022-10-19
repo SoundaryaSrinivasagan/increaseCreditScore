@@ -1,8 +1,8 @@
 # Author: Soundarya Srinivasagan
-# Date: October 16th, 2022
+# Date: October 17th, 2022
 # Project: increaseCreditScore
 # Version: Version_1
-# Description: This script will help the user strategize their income to effectively increase credit score
+# Description: This script will help create the main database that will store all the 'family's' information
 
 import psycopg2
 
@@ -149,7 +149,7 @@ def alterTableToAddMoreColumns(tableName, user, otherItemsList):
 
 
 #########################################################################
-def query_billsCollect_firstTime(val_tableName, val_userName, flag):
+def query_billsCollect(val_tableName, val_userName, flag):
 	# Dictionary to add all other types of payments
 	otherItemsList = {}
 
