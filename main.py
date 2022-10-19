@@ -238,12 +238,59 @@ def query_billsCollect_firstTime(val_tableName, val_userName, flag):
 
 
 #########################################################################
+#########################################################################
+#########################################################################
+def creditDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict):
+	print("**********************************************************************************")
+	print("The following section will collect details on your credit limit from all sources")
+	print("**********************************************************************************")
+
+	val_creditCard = input("Do you have a credit card? [ yes | no ]  ")
+	while ('yes' in val_creditCard):
+		val_creditCard_name = input("What is the name of this credit card? [ No spaces ]  ")
+		val_creditCard_amount = input("What is the credit limit on this credit card?   ")
+		creditCardDict.update({val_creditCard_name: val_creditCard_amount})
+		val_creditCard = input("Do you have anymore Credit Cards? [yes | no]  ")
+	print("**********************************************************************************")
+
+	val_lineOfCredit = input("Do you have a line of credit? [ yes | no ]  ")
+	while ('yes' in val_lineOfCredit):
+		val_creditCard_loc_name = input("Which bank do you have this line of credit with? [ No spaces ]  ")
+		val_creditCard_loc_amount = input("What is the credit limit on this?   ")
+		creditLineOfCreditDict.update({val_creditCard_loc_name: val_creditCard_loc_amount})
+		val_lineOfCredit = input("Do you have anymore lines of credit? [ yes | no ]   ")
+	print("**********************************************************************************")
+
+	val_otherCredit = input("Do you have any other credit products? [ yes | no ]  ")
+	while ('yes' in val_otherCredit):
+		val_creditCard_other = input("What is the name of this credit product? [ No spaces ]  ")
+		val_creditCard_other = input("What is the credit limit on this?   ")
+		creditOtherDict.update({val_creditCard_other: val_creditCard_other})
+		val_otherCredit = input("Do you have any other credit products? [ yes | no ]   ")
+	print("**********************************************************************************")
+
+	print(creditCardDict)
+	print(creditLineOfCreditDict)
+	print(creditOtherDict)
+
+#########################################################################
+def mapCreditToUser(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict):
+
+
+#########################################################################
 if __name__ == "__main__":
 
 	print("**********************************************************************************")
 	print("Welcome to increaseCreditScore")
 	print("Tool Description")
 	print("**********************************************************************************")
+
+	creditCardDict = {}
+	creditLineOfCreditDict = {}
+	creditOtherDict = {}
+
+	creditDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict)
+	# mapCreditToUser(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)
 
 	# Future version: check for invalid characters as input
 	val = input("Is this your first time running this program: [yes | no] ")
