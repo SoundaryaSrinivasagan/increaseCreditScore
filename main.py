@@ -103,9 +103,9 @@ def printValuesInTable():
 		print("Loans = ", result[5])
 
 #########################################################################
-def alterTableToAddMoreColumns(tableName, user):
+def alterTableToAddMoreColumns(tableName, user, otherItemsList):
 	# Dictionary to add all other types of payments
-	otherItemsList = {}
+	#otherItemsList = {}
 	local_cursor = connectToDB()
 
 	val_other = input("Please enter the name of the payment:  ")
@@ -120,9 +120,6 @@ def alterTableToAddMoreColumns(tableName, user):
 		print("\n")
 		otherItemsList.update({val_other : val_other_amount})
 		val_other1 = input("Do you have anymore payments: [yes | no]  ")
-
-	# ALTER TABLE Customers
-	# ADD Email varchar(255);
 
 	key = list(otherItemsList.keys())
 	lastElement = key[-1]
@@ -173,7 +170,7 @@ def query_billsCollect_firstTime(val_tableName, val_userName, flag):
 		# Insert values from user into Database
 		insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
 
-		alterTableToAddMoreColumns(val_tableName, val_userName)
+		alterTableToAddMoreColumns(val_tableName, val_userName, otherItemsList)
 
 		# Update values for all the keys in the dict
 		# insertDataDBOtherPayments(val_tableName, val_userName, otherItemsList)
@@ -343,8 +340,39 @@ def insertValToIdUser_Credit(tableName, val_userName, dict, type):
 	local_cursor.execute(postgres_insert_query)
 
 #########################################################################
+def updateCreditDBOtherUser(tableName, userName, dict, type):
+	local_cursor = connectToDB()
+
+	# Alter Table to add more columns
+	key = list(otherItemsList.keys())
+	lastElement = key[-1]
+
+	# Use Update statement so that the same row could be updated
+	postgres_insert_query_1T = """ ALTER TABLE """ + tableName + """_""" + type
+	postgres_insert_query_2T = """  """
+	postgres_insert_query_3T = """ ADD """
+	postgres_insert_query_4T = """ ; """
+
+	for keys in dict:
+		type = """ text """
+		# space = """  """
+		if (keys == lastElement):
+			part4 = """  """
+			postgres_insert_query_2T = postgres_insert_query_2T + keys + type + part4
+		else:
+			part4 = """ , """
+			postgres_insert_query_2T = postgres_insert_query_2T + keys + type + part4 + postgres_insert_query_3T
+
+	postgres_insert_query = postgres_insert_query_1T + postgres_insert_query_3T + postgres_insert_query_2T + postgres_insert_query_4T
+	local_cursor.execute(postgres_insert_query)
+
+	# Update Table with their respective values
+
+
+#########################################################################
 def mapCreditToUser(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict):
 
+	# This will help identify which DB the action should take place in
 	creditCard = "creditCard"
 	loc = "loc"
 	other = "other"
@@ -356,7 +384,6 @@ def mapCreditToUser(val_tableName, val_userName, creditCardDict, creditLineOfCre
 	insertValToIdUser_Credit(val_tableName, val_userName, creditCardDict, creditCard)
 	insertValToIdUser_Credit(val_tableName, val_userName, creditLineOfCreditDict, loc)
 	insertValToIdUser_Credit(val_tableName, val_userName, creditOtherDict, other)
-
 
 
 #########################################################################
@@ -371,6 +398,11 @@ if __name__ == "__main__":
 	creditLineOfCreditDict = {}
 	creditOtherDict = {}
 
+	# This will help identify which DB the action should take place in
+	creditCard = "creditCard"
+	loc = "loc"
+	other = "other"
+
 	# Future version: check for invalid characters as input
 	val = input("Is this your first time running this program: [yes | no] ")
 	if ("yes" in val):
@@ -383,7 +415,7 @@ if __name__ == "__main__":
 		val_decide = input("Do you want to update amount for bill payments [1] or Add user to your Family Table [2]: [ 1 | 2 ]  ")
 		if ("1" in val_decide):
 			val_userName = input("What is your name: ")
-			val_update = input("What payment would you like to update: ")
+			# val_update = input("What payment would you like to update: ")
 
 			creditDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict)
 			mapCreditToUser(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)
@@ -392,3 +424,10 @@ if __name__ == "__main__":
 			val_userName = input("What is your name: ")
 			# This will not create a new group and add val_username to the same group
 			query_billsCollect_firstTime(val_tableName, val_userName, False)
+
+			# Other members part of the family can add data to the same DB
+			## Current problem = the DBs here are empty and you need to Alter and update the table
+			### Might become easier when you simplify code
+			# updateCreditDBOtherUser(val_tableName, val_userName, creditCardDict, creditCard)
+			# updateCreditDBOtherUser(val_tableName, val_userName, creditLineOfCreditDict, loc)
+			# updateCreditDBOtherUser(val_tableName, val_userName, creditOtherDict, other)
