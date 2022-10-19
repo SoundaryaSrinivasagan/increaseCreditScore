@@ -263,9 +263,9 @@ def creditDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict):
 
 	val_otherCredit = input("Do you have any other credit products? [ yes | no ]  ")
 	while ('yes' in val_otherCredit):
-		val_creditCard_other = input("What is the name of this credit product? [ No spaces ]  ")
-		val_creditCard_other = input("What is the credit limit on this?   ")
-		creditOtherDict.update({val_creditCard_other: val_creditCard_other})
+		val_creditCard_other_name = input("What is the name of this credit product? [ No spaces ]  ")
+		val_creditCard_other_amount = input("What is the credit limit on this?   ")
+		creditOtherDict.update({val_creditCard_other_name: val_creditCard_other_amount})
 		val_otherCredit = input("Do you have any other credit products? [ yes | no ]   ")
 	print("**********************************************************************************")
 
@@ -274,7 +274,89 @@ def creditDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict):
 	print(creditOtherDict)
 
 #########################################################################
+def creditTableDB(val_tableName, val_userName, dict, type):
+	local_cursor = connectToDB()
+
+	# Create table statement
+	sqlCreateTable1 = """ CREATE TABLE """ + val_tableName + """_""" + type
+	sqlCreateTable2 = """ ( id """ + """ text, """
+
+	key = list(dict.keys())
+	lastElement = key[-1]
+
+	part = """  """
+	for keys, values in dict.items():
+		part12 = keys
+		part14 = """ text """
+		part_space = """  """
+		if (keys == lastElement):
+			part13 = """  """
+			part = part + part12 + part_space + part14 + part13
+		else:
+			part13 = """ , """
+			part = part + part12 + part_space + part14 + part13
+
+	sqlCreateTable3 = part
+	sqlCreateTable4 = """ ); """
+	sqlCreateTable = sqlCreateTable1 + sqlCreateTable2 + sqlCreateTable3 + sqlCreateTable4
+
+	# Create a table in PostgreSQL database
+	local_cursor.execute(sqlCreateTable)
+
+
+#########################################################################
+def insertValToIdUser_Credit(tableName, val_userName, dict, type):
+	local_cursor = connectToDB()
+	key = list(dict.keys())
+	lastElement = key[-1]
+
+	# Use Update statement so that the same row could be updated
+	postgres_insert_query_1T = """ INSERT INTO """ + tableName + """_""" + type + """ ( id, """
+	postgres_insert_query_2T = """  """
+	postgres_insert_query_3T = """  VALUES ( """ + """ \' """  + val_userName + """ \', """ + """ """
+	#postgres_insert_query_4T = """ WHERE id =  """ + val_userName + """ ; """
+
+	# Map keys into Insert Into SQL statement
+	for keys in dict:
+		part1 = """ = """
+		if (keys == lastElement):
+			part4 = """ ) """
+			postgres_insert_query_2T = postgres_insert_query_2T + keys + part4
+		else:
+			part4 = """ , """
+			postgres_insert_query_2T = postgres_insert_query_2T + keys + part4
+
+	# Map values into Insert Into SQL statement
+	part_val = """ \' """
+	postgres_insert_query_2TT = """  """
+	for keys, values in dict.items():
+		if (keys == lastElement):
+			part41 = """ \' ); """
+			postgres_insert_query_2TT = postgres_insert_query_2TT + part_val + values + part41
+		else:
+			part41 = """ \', """
+			postgres_insert_query_2TT = postgres_insert_query_2TT + part_val + values  + part41
+
+	postgres_insert_query = postgres_insert_query_1T + postgres_insert_query_2T + postgres_insert_query_3T + postgres_insert_query_2TT
+
+	print(postgres_insert_query)
+	local_cursor.execute(postgres_insert_query)
+
+#########################################################################
 def mapCreditToUser(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict):
+
+	creditCard = "creditCard"
+	loc = "loc"
+	other = "other"
+
+	creditTableDB(val_tableName, val_userName, creditCardDict, creditCard)
+	creditTableDB(val_tableName, val_userName, creditLineOfCreditDict, loc)
+	creditTableDB(val_tableName, val_userName, creditOtherDict, other)
+
+	insertValToIdUser_Credit(val_tableName, val_userName, creditCardDict, creditCard)
+	insertValToIdUser_Credit(val_tableName, val_userName, creditLineOfCreditDict, loc)
+	insertValToIdUser_Credit(val_tableName, val_userName, creditOtherDict, other)
+
 
 
 #########################################################################
@@ -289,9 +371,6 @@ if __name__ == "__main__":
 	creditLineOfCreditDict = {}
 	creditOtherDict = {}
 
-	creditDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict)
-	# mapCreditToUser(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)
-
 	# Future version: check for invalid characters as input
 	val = input("Is this your first time running this program: [yes | no] ")
 	if ("yes" in val):
@@ -305,6 +384,9 @@ if __name__ == "__main__":
 		if ("1" in val_decide):
 			val_userName = input("What is your name: ")
 			val_update = input("What payment would you like to update: ")
+
+			creditDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict)
+			mapCreditToUser(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)
 
 		elif ("2" in val_decide):
 			val_userName = input("What is your name: ")
