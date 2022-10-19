@@ -80,8 +80,13 @@ def insertDataDBOtherPayments(tableName, user, dictOfValues):
 			postgres_insert_query_2T = postgres_insert_query_2T + keys + part1 + values + part4
 
 	postgres_insert_query = postgres_insert_query_1T + postgres_insert_query_2T + postgres_insert_query_3T + postgres_insert_query_4T
-
+	print(postgres_insert_query)
 	local_cursor.execute(postgres_insert_query)
+
+	# Fetching all the rows after the update
+	sql = '''SELECT * from family'''
+	local_cursor.execute(sql)
+	print(local_cursor.fetchall())
 
 #########################################################################
 # Print values in table
@@ -98,7 +103,9 @@ def printValuesInTable():
 		print("Loans = ", result[5])
 
 #########################################################################
-def alterTableToAddMoreColumns(flag):
+def alterTableToAddMoreColumns(tableName, user):
+	# Dictionary to add all other types of payments
+	otherItemsList = {}
 	local_cursor = connectToDB()
 
 	val_other = input("Please enter the name of the payment:  ")
@@ -114,8 +121,34 @@ def alterTableToAddMoreColumns(flag):
 		otherItemsList.update({val_other : val_other_amount})
 		val_other1 = input("Do you have anymore payments: [yes | no]  ")
 
+	# ALTER TABLE Customers
+	# ADD Email varchar(255);
 
+	key = list(otherItemsList.keys())
+	lastElement = key[-1]
+
+	# Use Update statement so that the same row could be updated
+	postgres_insert_query_1T = """ ALTER TABLE """ + tableName
+	postgres_insert_query_2T = """  """
+	postgres_insert_query_3T = """ ADD """
+	postgres_insert_query_4T = """ ; """
+
+	for keys in otherItemsList:
+		type = """ int """
+		#space = """  """
+		if (keys == lastElement):
+			part4 = """  """
+			postgres_insert_query_2T = postgres_insert_query_2T + keys + type + part4
+		else:
+			part4 = """ , """
+			postgres_insert_query_2T = postgres_insert_query_2T + keys + type + part4 + postgres_insert_query_3T
+
+	postgres_insert_query = postgres_insert_query_1T + postgres_insert_query_3T + postgres_insert_query_2T + postgres_insert_query_4T
 	local_cursor.execute(postgres_insert_query)
+
+	# Update values for all the keys in the dict
+	print(otherItemsList)
+	insertDataDBOtherPayments(tableName, user, otherItemsList)
 
 
 #########################################################################
@@ -137,7 +170,14 @@ def query_billsCollect_firstTime(val_tableName, val_userName, flag):
 	val_other = input ("Do you have any other monthly payments on your credit card: [yes | no] ")
 
 	if (('yes' in val_other) and (flag == False)):
-		alterTableToAddMoreColumns(False)
+		# Insert values from user into Database
+		insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
+
+		alterTableToAddMoreColumns(val_tableName, val_userName)
+
+		# Update values for all the keys in the dict
+		# insertDataDBOtherPayments(val_tableName, val_userName, otherItemsList)
+
 		print("\n")
 
 	elif ('yes' in val_other):
@@ -176,7 +216,7 @@ def query_billsCollect_firstTime(val_tableName, val_userName, flag):
 
 			print("\n")
 
-	elif('no' in val_other):
+	elif ('no' in val_other):
 		# See if a new table is necessary
 		if (flag == True):
 			# Run this statement once to initialize, need to find more permanent solution
@@ -223,7 +263,3 @@ if __name__ == "__main__":
 			val_userName = input("What is your name: ")
 			# This will not create a new group and add val_username to the same group
 			query_billsCollect_firstTime(val_tableName, val_userName, False)
-
-
-
-
