@@ -1,0 +1,24 @@
+
+*************************************************************************************************** 
+ Welcome to increaseCreditScore 
+ This program will help the user strategize their credit to effectively increase credit score
+*************************************************************************************************** 
+
+(' deepak ', ' 2000 ', ' 200 ')
+(' deepak ', ' 20000 ', ' 5000 ')
+(' deepak ', ' 500 ')
+
+This Report has been generated for: deepak
+[deepak belongs to group: family]
+................................................................................................... 
+Credit Card Headers: 
+('id',)
+('td',)
+('rbc',)
+Line of Credit Headers: 
+('id',)
+('cibc',)
+('td',)
+Other Types of Credit Card Headers: 
+('id',)
+('mastercard',)

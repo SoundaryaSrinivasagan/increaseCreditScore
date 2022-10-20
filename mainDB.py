@@ -11,7 +11,7 @@ def connectToDB():
 	# Define our connection string
 	conn_string = "host='localhost' dbname='increasecreditscore' user='soundaryasrinivasagan' password='secret'"
 
-	# Get a connection, if a connection cannot be made, an exception will be raised here
+	# Get a connection, if a connection cannt be made, an exception will be raised here
 	conn = psycopg2.connect(conn_string)
 
 	# conn.cursor will return a cursor object, you can use this cursor to perform queries
@@ -80,27 +80,36 @@ def insertDataDBOtherPayments(tableName, user, dictOfValues):
 			postgres_insert_query_2T = postgres_insert_query_2T + keys + part1 + values + part4
 
 	postgres_insert_query = postgres_insert_query_1T + postgres_insert_query_2T + postgres_insert_query_3T + postgres_insert_query_4T
-	print(postgres_insert_query)
+	#print(postgres_insert_query)
 	local_cursor.execute(postgres_insert_query)
 
+	'''
 	# Fetching all the rows after the update
-	sql = '''SELECT * from family'''
+	sql = SELECT * from family add the appos
 	local_cursor.execute(sql)
 	print(local_cursor.fetchall())
-
+	'''
 #########################################################################
 # Print values in table
-def printValuesInTable():
+def printValuesInTable(val_tableName, val_userName):
 	local_cursor = connectToDB()
 
+	sql = """SELECT COLUMN_NAME FROM """ + """ INFORMATION_SCHEMA.COLUMNS """ + """ WHERE TABLE_NAME = """ + """ \'""" + val_tableName + """\' """ + """ ORDER BY ORDINAL_POSITION """ + """ ; """
+
+	local_cursor.execute(sql)
 	results = local_cursor.fetchall()
-	for result in results:
-		print("Id = ", result[0], )
-		print("Car Insurance = ", result[1])
-		print("Gym = ", result[2])
-		print("Internet = ", result[3])
-		print("Phone = ", result[4])
-		print("Loans = ", result[5])
+	#print (results)
+
+	#for result in results:
+	#print(result)
+	#print("Id = ", result[0], )
+	#print("Car Insurance = ", result[1])
+	#print("Gym = ", result[2])
+	#print("Internet = ", result[3])
+	#print("Phone = ", result[4])
+	#print("Loans = ", result[5])
+
+	return results
 
 #########################################################################
 def alterTableToAddMoreColumns(tableName, user, otherItemsList):
@@ -112,14 +121,14 @@ def alterTableToAddMoreColumns(tableName, user, otherItemsList):
 	val_other_amount = input("What is the monthly amount that you pay for " + val_other + ": [Round up]  ")
 	print("\n")
 	otherItemsList.update({val_other : val_other_amount})
-	val_other1 = input("Do you have anymore payments: [yes | no]  ")
+	val_other1 = input("Do you have anymore payments: [y | n]  ")
 
-	while ('yes' in val_other1):
+	while ('y' in val_other1):
 		val_other = input("Please enter the name of the payment: ")
 		val_other_amount = input("What is the monthly amount that you pay for " + val_other + ": [Round up]  ")
 		print("\n")
 		otherItemsList.update({val_other : val_other_amount})
-		val_other1 = input("Do you have anymore payments: [yes | no]  ")
+		val_other1 = input("Do you have anymore payments: [y | n]  ")
 
 	key = list(otherItemsList.keys())
 	lastElement = key[-1]
@@ -144,7 +153,7 @@ def alterTableToAddMoreColumns(tableName, user, otherItemsList):
 	local_cursor.execute(postgres_insert_query)
 
 	# Update values for all the keys in the dict
-	print(otherItemsList)
+	# print(otherItemsList)
 	insertDataDBOtherPayments(tableName, user, otherItemsList)
 
 
@@ -155,7 +164,7 @@ def query_billsCollect(val_tableName, val_userName, flag):
 
 	print("\n")
 	print('Please enter the following information (per month), if you do not have something that was asked, enter 0')
-	print('For example, if you do not have car insurance, enter 0 when prompted', "\n")
+	print('For example, if you do nt have car insurance, enter 0 when prompted', "\n")
 
 	val_carInsurance = input("What is the monthly amount that you pay for your car insurance: [Round up]  ")
 	val_gym = input("What is the monthly amount that you pay for your gym membership: [Round up]  ")
@@ -164,9 +173,9 @@ def query_billsCollect(val_tableName, val_userName, flag):
 	val_loans = input("What is the monthly amount that you pay for any educational loans (OSAP): [Round up]  ")
 	print("\n")
 
-	val_other = input ("Do you have any other monthly payments on your credit card: [yes | no] ")
+	val_other = input ("Do you have any other monthly payments on your credit card: [y | n] ")
 
-	if (('yes' in val_other) and (flag == False)):
+	if (('y' in val_other) and (flag == False)):
 		# Insert values from user into Database
 		insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
 
@@ -177,19 +186,19 @@ def query_billsCollect(val_tableName, val_userName, flag):
 
 		print("\n")
 
-	elif ('yes' in val_other):
+	elif ('y' in val_other):
 		val_other = input("Please enter the name of the payment:  ")
 		val_other_amount = input("What is the monthly amount that you pay for " + val_other + ": [Round up]  ")
 		print("\n")
 		otherItemsList.update({val_other : val_other_amount})
-		val_other1 = input("Do you have anymore payments: [yes | no]  ")
+		val_other1 = input("Do you have anymore payments: [y | n]  ")
 
-		while ('yes' in val_other1):
+		while ('y' in val_other1):
 			val_other = input("Please enter the name of the payment: ")
 			val_other_amount = input("What is the monthly amount that you pay for " + val_other + ": [Round up]  ")
 			print("\n")
 			otherItemsList.update({val_other : val_other_amount})
-			val_other1 = input("Do you have anymore payments: [yes | no]  ")
+			val_other1 = input("Do you have anymore payments: [y | n]  ")
 
 		# See if a new table is necessary
 		if (flag == True):
@@ -213,7 +222,7 @@ def query_billsCollect(val_tableName, val_userName, flag):
 
 			print("\n")
 
-	elif ('no' in val_other):
+	elif ('n' in val_other):
 		# See if a new table is necessary
 		if (flag == True):
 			# Run this statement once to initialize, need to find more permanent solution
