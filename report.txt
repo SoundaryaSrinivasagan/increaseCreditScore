@@ -4,21 +4,18 @@
  This program will help the user strategize their credit to effectively increase credit score
 *************************************************************************************************** 
 
-(' deepak ', ' 2000 ', ' 200 ')
-(' deepak ', ' 20000 ', ' 5000 ')
-(' deepak ', ' 500 ')
+td = 2000
+rbc = 200
+
+cibc = 20000
+td = 5000
+
+mastercard = 500
+
 
 This Report has been generated for: deepak
 [deepak belongs to group: family]
 ................................................................................................... 
-Credit Card Headers: 
-('id',)
-('td',)
-('rbc',)
-Line of Credit Headers: 
-('id',)
-('cibc',)
-('td',)
-Other Types of Credit Card Headers: 
-('id',)
-('mastercard',)
+Current Credit Card Information for deepak
+Current Line of Credit Information for deepak
+Current Other Types of Credit Card Information for deepak

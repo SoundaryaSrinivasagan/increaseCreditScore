@@ -4,6 +4,7 @@
 # Version: Version_1
 # Description: This script will help create the final report
 
+import re
 import psycopg2
 from mainDB import *
 from creditDB import *
@@ -24,7 +25,7 @@ def reportGenerate(val_tableName, val_userName, creditCardDict, creditLineOfCred
 
     with open("report.txt", "a") as f:
         f.write(newline)
-        f.write("This Report has been generated for: " + val_userName + newline)
+        f.write("This report has been generated for: " + val_userName + newline)
         f.write("[" + val_userName + " belongs to group: " + val_tableName + "]" + newline)
         f.write(dots)
 
@@ -33,27 +34,42 @@ def reportGenerate(val_tableName, val_userName, creditCardDict, creditLineOfCred
         # f.writelines([f"{line}\n" for line in result])
 
         # Generate Credit info for userNamer
+        #################################################################################################
+        f.write("Current Credit Card Information for " + val_userName + newline)
+        # Get credit information from database for user
         credit_card = getCreditInfo(val_tableName, val_userName, creditCardDict, creditCard)
+        # Convert and modify headers list from tuple to list of strings
+        card_card_TupToString = convertTupToStringMod(credit_card)
+        # Get credit headers from database for user
         credit_card_headers = getCreditHeadersInDB(val_tableName, creditCard)
-        f.write("Credit Card Headers: \n")
-        f.writelines([f"{line}\n" for line in credit_card_headers])
-        x = ', '.join(map(str, credit_card_headers))
-        print(x)
-        print(type(x))
+        # Convert and modify headers list from tuple to list of strings
+        card_headers = convertTupToStringMod(credit_card_headers)
+        # Print the value beside the header in the report
+        printValBesideHeader(val_userName, card_headers, card_card_TupToString)
 
-        # tups = [(1, 2), (3, 4)]
-        # print (', '.join(map(str, credit_card_headers)))
-       # '(1, 2), (3, 4)'
-
+        f.write("Current Line of Credit Information for " + val_userName + newline)
+        #################################################################################################
         line_of_credit = getCreditInfo(val_tableName, val_userName, creditLineOfCreditDict, loc)
+        # Convert and modify headers list from tuple to list of strings
+        card_loc_TupToString = convertTupToStringMod(line_of_credit)
+        # Get credit headers from database for user
         line_of_credit_headers = getCreditHeadersInDB(val_tableName, loc)
-        f.write("Line of Credit Headers: \n")
-        f.writelines([f"{line}\n" for line in line_of_credit_headers])
+        # Convert and modify headers list from tuple to list of strings
+        loc_headers = convertTupToStringMod(line_of_credit_headers)
+        # Print the value beside the header in the report
+        printValBesideHeader(val_userName, loc_headers, card_loc_TupToString)
 
+        f.write("Current Other Types of Credit Card Information for " + val_userName + newline)
+        #################################################################################################
         other_credit = getCreditInfo(val_tableName, val_userName, creditOtherDict, other)
+        # Convert and modify headers list from tuple to list of strings
+        card_other_TupToString = convertTupToStringMod(other_credit)
+        # Get credit headers from database for user
         other_credit_headers =getCreditHeadersInDB(val_tableName, other)
-        f.write("Other Types of Credit Card Headers: \n")
-        f.writelines([f"{line}\n" for line in other_credit_headers])
+        # Convert and modify headers list from tuple to list of strings
+        other_headers = convertTupToStringMod(other_credit_headers)
+        # Print the value beside the header in the report
+        printValBesideHeader(val_userName, other_headers, card_other_TupToString)
 
 
 def generateHeader():
@@ -66,7 +82,6 @@ def generateHeader():
         f.write(newline)
 
 def printMainDB(val_tableName, val_userName):
-    #listResults = printValuesInTable(val_tableName, val_userName)
     local_cursor = connectToDB()
     sql_id = """SELECT * FROM """ + val_tableName + """ WHERE id = """ + """ \' """ + val_userName + """ \' """ + """ ; """
     local_cursor.execute(sql_id)
@@ -80,8 +95,9 @@ def getCreditInfo(val_tableName, val_userName, dict, type):
     local_cursor.execute(sql_id)
     results = local_cursor.fetchall()
 
-    with open('report.txt', 'a') as f:
-        f.writelines([f"{line}\n" for line in results])
+    #with open('report.txt', 'a') as f:
+    #    f.writelines([f"{line}\n" for line in results])
+    return results
 
 def getCreditHeadersInDB(val_tableName, type):
     local_cursor = connectToDB()
@@ -89,7 +105,23 @@ def getCreditHeadersInDB(val_tableName, type):
     local_cursor.execute(sql)
     results = local_cursor.fetchall()
 
-   # with open('report.txt', 'a') as f:
-   #    f.writelines([f"{line}\n" for line in results])
-
     return results
+
+def convertTupToStringMod(dict):
+    convertTupToString = '.. '.join(map(str, dict))
+    x = list(convertTupToString.split(","))
+    part0 = []
+
+    for item in x:
+        part = str(item)[1:-1]
+        part2 = re.sub('\W+', '', part)
+        part0.append(part2)
+
+    return part0
+
+def printValBesideHeader(val_userName, credit_header_info, credit_dbinfo):
+    with open("report.txt", "a") as f:
+        for (i, j) in zip(credit_header_info, credit_dbinfo):
+            if (("id" not in i) and (val_userName not in j)):
+                f.write(i + " = " + j + newline)
+        f.write(newline)
