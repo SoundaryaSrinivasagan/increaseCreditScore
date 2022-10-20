@@ -5,429 +5,123 @@
 # Description: This script will help the user strategize their income to effectively increase credit score
 
 import psycopg2
+from mainDB import *
+from creditDB import *
+from report import *
 
-########################################################################
-def connectToDB():
-	# Define our connection string
-	conn_string = "host='localhost' dbname='increasecreditscore' user='soundaryasrinivasagan' password='secret'"
 
-	# Get a connection, if a connection cannot be made, an exception will be raised here
-	conn = psycopg2.connect(conn_string)
-
-	# conn.cursor will return a cursor object, you can use this cursor to perform queries
-	conn.autocommit = True
-	cursor = conn.cursor()
-
-	return cursor
-
-########################################################################
-def connectDBCreateTable(name_Table, dictOfValues):
-	local_cursor = connectToDB()
-
-	# Create table statement
-	sqlCreateTable1 = """ CREATE TABLE """ + name_Table
-	sqlCreateTable2 = """ (id text, carInsurance int, gym int, internet int, phone int, loans int, """
-
-	key = list(dictOfValues.keys())
-	lastElement = key[-1]
-
-	part = """  """
-	for keys in dictOfValues:
-		part12 = keys
-		part14 = """ int """
-		part_space = """  """
-		if (keys == lastElement):
-			part13 = """  """
-			part = part + part12 + part_space+ part14 + part13
-		else:
-			part13 = """ , """
-			part = part + part12 + part_space + part14 + part13
-
-	sqlCreateTable3 = part
-	sqlCreateTable4 = """ ); """
-	sqlCreateTable = sqlCreateTable1 + sqlCreateTable2 + sqlCreateTable3 + sqlCreateTable4
-
-	# Create a table in PostgreSQL database
-	local_cursor.execute(sqlCreateTable)
-
-#########################################################################
-def insertDataDB(tableName, name, carInsurance, gym, internet, phone, loans):
-	local_cursor = connectToDB()
-	postgres_insert_query = """ INSERT INTO """ + tableName + """(id, carInsurance, gym, internet, phone, loans) 
-	                            VALUES ( """ + """ \' """ + name + """ \', """ + """ \' """  + carInsurance + """ \', """ + """ \' """ + gym + """ \', """ + """ \' """ + internet + """ \', """ + """ \' """ + phone + """ \', """ + """ \' """ + loans + """ \' """ + """)"""
-
-	local_cursor.execute(postgres_insert_query)
-
-#########################################################################
-def insertDataDBOtherPayments(tableName, user, dictOfValues):
-	local_cursor = connectToDB()
-
-	key = list(dictOfValues.keys())
-	lastElement = key[-1]
-
-	# Use Update statement so that the same row could be updated
-	postgres_insert_query_1T = """ UPDATE """ + tableName + """ SET """
-	postgres_insert_query_2T = """  """
-	postgres_insert_query_3T = """  WHERE id = """ + """ ' """ + user + """ ' """
-	postgres_insert_query_4T = """ ; """
-	for keys, values in dictOfValues.items():
-		part1 = """ = """
-		if (keys == lastElement):
-			part4 = """  """
-			postgres_insert_query_2T = postgres_insert_query_2T + keys + part1 + values + part4
-		else:
-			part4 = """ , """
-			postgres_insert_query_2T = postgres_insert_query_2T + keys + part1 + values + part4
-
-	postgres_insert_query = postgres_insert_query_1T + postgres_insert_query_2T + postgres_insert_query_3T + postgres_insert_query_4T
-	print(postgres_insert_query)
-	local_cursor.execute(postgres_insert_query)
-
-	# Fetching all the rows after the update
-	sql = '''SELECT * from family'''
-	local_cursor.execute(sql)
-	print(local_cursor.fetchall())
-
-#########################################################################
-# Print values in table
-def printValuesInTable():
-	local_cursor = connectToDB()
-
-	results = local_cursor.fetchall()
-	for result in results:
-		print("Id = ", result[0], )
-		print("Car Insurance = ", result[1])
-		print("Gym = ", result[2])
-		print("Internet = ", result[3])
-		print("Phone = ", result[4])
-		print("Loans = ", result[5])
-
-#########################################################################
-def alterTableToAddMoreColumns(tableName, user, otherItemsList):
-	# Dictionary to add all other types of payments
-	#otherItemsList = {}
-	local_cursor = connectToDB()
-
-	val_other = input("Please enter the name of the payment:  ")
-	val_other_amount = input("What is the monthly amount that you pay for " + val_other + ": [Round up]  ")
-	print("\n")
-	otherItemsList.update({val_other : val_other_amount})
-	val_other1 = input("Do you have anymore payments: [yes | no]  ")
-
-	while ('yes' in val_other1):
-		val_other = input("Please enter the name of the payment: ")
-		val_other_amount = input("What is the monthly amount that you pay for " + val_other + ": [Round up]  ")
-		print("\n")
-		otherItemsList.update({val_other : val_other_amount})
-		val_other1 = input("Do you have anymore payments: [yes | no]  ")
-
-	key = list(otherItemsList.keys())
-	lastElement = key[-1]
-
-	# Use Update statement so that the same row could be updated
-	postgres_insert_query_1T = """ ALTER TABLE """ + tableName
-	postgres_insert_query_2T = """  """
-	postgres_insert_query_3T = """ ADD """
-	postgres_insert_query_4T = """ ; """
-
-	for keys in otherItemsList:
-		type = """ int """
-		#space = """  """
-		if (keys == lastElement):
-			part4 = """  """
-			postgres_insert_query_2T = postgres_insert_query_2T + keys + type + part4
-		else:
-			part4 = """ , """
-			postgres_insert_query_2T = postgres_insert_query_2T + keys + type + part4 + postgres_insert_query_3T
-
-	postgres_insert_query = postgres_insert_query_1T + postgres_insert_query_3T + postgres_insert_query_2T + postgres_insert_query_4T
-	local_cursor.execute(postgres_insert_query)
-
-	# Update values for all the keys in the dict
-	print(otherItemsList)
-	insertDataDBOtherPayments(tableName, user, otherItemsList)
-
-
-#########################################################################
-def query_billsCollect_firstTime(val_tableName, val_userName, flag):
-	# Dictionary to add all other types of payments
-	otherItemsList = {}
-
-	print("\n")
-	print('Please enter the following information (per month), if you do not have something that was asked, enter 0')
-	print('For example, if you do not have car insurance, enter 0 when prompted', "\n")
-
-	val_carInsurance = input("What is the monthly amount that you pay for your car insurance: [Round up]  ")
-	val_gym = input("What is the monthly amount that you pay for your gym membership: [Round up]  ")
-	val_internet = input("What is the monthly amount that you pay for your internet: [Round up]  ")
-	val_phone = input("What is the monthly amount that you pay for your phone plan: [Round up]  ")
-	val_loans = input("What is the monthly amount that you pay for any educational loans (OSAP): [Round up]  ")
-	print("\n")
-
-	val_other = input ("Do you have any other monthly payments on your credit card: [yes | no] ")
-
-	if (('yes' in val_other) and (flag == False)):
-		# Insert values from user into Database
-		insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
-
-		alterTableToAddMoreColumns(val_tableName, val_userName, otherItemsList)
-
-		# Update values for all the keys in the dict
-		# insertDataDBOtherPayments(val_tableName, val_userName, otherItemsList)
-
-		print("\n")
-
-	elif ('yes' in val_other):
-		val_other = input("Please enter the name of the payment:  ")
-		val_other_amount = input("What is the monthly amount that you pay for " + val_other + ": [Round up]  ")
-		print("\n")
-		otherItemsList.update({val_other : val_other_amount})
-		val_other1 = input("Do you have anymore payments: [yes | no]  ")
-
-		while ('yes' in val_other1):
-			val_other = input("Please enter the name of the payment: ")
-			val_other_amount = input("What is the monthly amount that you pay for " + val_other + ": [Round up]  ")
-			print("\n")
-			otherItemsList.update({val_other : val_other_amount})
-			val_other1 = input("Do you have anymore payments: [yes | no]  ")
-
-		# See if a new table is necessary
-		if (flag == True):
-			# Run this statement once to initialize, need to find more permanent solution
-			connectDBCreateTable(val_tableName, otherItemsList)
-
-			# Insert values from user into Database
-			insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
-
-			# Insert values from user into Database (for other payments)
-			insertDataDBOtherPayments(val_tableName, val_userName, otherItemsList)
-
-			print("\n")
-
-		elif (flag == False):
-			# Insert values from user into Database
-			insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
-
-			# Insert values from user into Database (for other payments)
-			insertDataDBOtherPayments(val_tableName, val_userName, otherItemsList)
-
-			print("\n")
-
-	elif ('no' in val_other):
-		# See if a new table is necessary
-		if (flag == True):
-			# Run this statement once to initialize, need to find more permanent solution
-			connectDBCreateTable(val_tableName, otherItemsList)
-
-			# Insert values from user into Database
-			insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
-
-			# Insert values from user into Database (for other payments)
-			insertDataDBOtherPayments(val_tableName, val_userName, otherItemsList)
-
-			print("\n")
-
-		elif (flag == False):
-			# Insert values from user into Database
-			insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
-
-			print("\n")
-
-
-#########################################################################
-#########################################################################
-#########################################################################
-def creditDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict):
-	print("**********************************************************************************")
-	print("The following section will collect details on your credit limit from all sources")
-	print("**********************************************************************************")
-
-	val_creditCard = input("Do you have a credit card? [ yes | no ]  ")
-	while ('yes' in val_creditCard):
-		val_creditCard_name = input("What is the name of this credit card? [ No spaces ]  ")
-		val_creditCard_amount = input("What is the credit limit on this credit card?   ")
-		creditCardDict.update({val_creditCard_name: val_creditCard_amount})
-		val_creditCard = input("Do you have anymore Credit Cards? [yes | no]  ")
-	print("**********************************************************************************")
-
-	val_lineOfCredit = input("Do you have a line of credit? [ yes | no ]  ")
-	while ('yes' in val_lineOfCredit):
-		val_creditCard_loc_name = input("Which bank do you have this line of credit with? [ No spaces ]  ")
-		val_creditCard_loc_amount = input("What is the credit limit on this?   ")
-		creditLineOfCreditDict.update({val_creditCard_loc_name: val_creditCard_loc_amount})
-		val_lineOfCredit = input("Do you have anymore lines of credit? [ yes | no ]   ")
-	print("**********************************************************************************")
-
-	val_otherCredit = input("Do you have any other credit products? [ yes | no ]  ")
-	while ('yes' in val_otherCredit):
-		val_creditCard_other_name = input("What is the name of this credit product? [ No spaces ]  ")
-		val_creditCard_other_amount = input("What is the credit limit on this?   ")
-		creditOtherDict.update({val_creditCard_other_name: val_creditCard_other_amount})
-		val_otherCredit = input("Do you have any other credit products? [ yes | no ]   ")
-	print("**********************************************************************************")
-
-	print(creditCardDict)
-	print(creditLineOfCreditDict)
-	print(creditOtherDict)
-
-#########################################################################
-def creditTableDB(val_tableName, val_userName, dict, type):
-	local_cursor = connectToDB()
-
-	# Create table statement
-	sqlCreateTable1 = """ CREATE TABLE """ + val_tableName + """_""" + type
-	sqlCreateTable2 = """ ( id """ + """ text, """
-
-	key = list(dict.keys())
-	lastElement = key[-1]
-
-	part = """  """
-	for keys, values in dict.items():
-		part12 = keys
-		part14 = """ text """
-		part_space = """  """
-		if (keys == lastElement):
-			part13 = """  """
-			part = part + part12 + part_space + part14 + part13
-		else:
-			part13 = """ , """
-			part = part + part12 + part_space + part14 + part13
-
-	sqlCreateTable3 = part
-	sqlCreateTable4 = """ ); """
-	sqlCreateTable = sqlCreateTable1 + sqlCreateTable2 + sqlCreateTable3 + sqlCreateTable4
-
-	# Create a table in PostgreSQL database
-	local_cursor.execute(sqlCreateTable)
-
-
-#########################################################################
-def insertValToIdUser_Credit(tableName, val_userName, dict, type):
-	local_cursor = connectToDB()
-	key = list(dict.keys())
-	lastElement = key[-1]
-
-	# Use Update statement so that the same row could be updated
-	postgres_insert_query_1T = """ INSERT INTO """ + tableName + """_""" + type + """ ( id, """
-	postgres_insert_query_2T = """  """
-	postgres_insert_query_3T = """  VALUES ( """ + """ \' """  + val_userName + """ \', """ + """ """
-	#postgres_insert_query_4T = """ WHERE id =  """ + val_userName + """ ; """
-
-	# Map keys into Insert Into SQL statement
-	for keys in dict:
-		part1 = """ = """
-		if (keys == lastElement):
-			part4 = """ ) """
-			postgres_insert_query_2T = postgres_insert_query_2T + keys + part4
-		else:
-			part4 = """ , """
-			postgres_insert_query_2T = postgres_insert_query_2T + keys + part4
-
-	# Map values into Insert Into SQL statement
-	part_val = """ \' """
-	postgres_insert_query_2TT = """  """
-	for keys, values in dict.items():
-		if (keys == lastElement):
-			part41 = """ \' ); """
-			postgres_insert_query_2TT = postgres_insert_query_2TT + part_val + values + part41
-		else:
-			part41 = """ \', """
-			postgres_insert_query_2TT = postgres_insert_query_2TT + part_val + values  + part41
-
-	postgres_insert_query = postgres_insert_query_1T + postgres_insert_query_2T + postgres_insert_query_3T + postgres_insert_query_2TT
-
-	print(postgres_insert_query)
-	local_cursor.execute(postgres_insert_query)
-
-#########################################################################
-def updateCreditDBOtherUser(tableName, userName, dict, type):
-	local_cursor = connectToDB()
-
-	# Alter Table to add more columns
-	key = list(otherItemsList.keys())
-	lastElement = key[-1]
-
-	# Use Update statement so that the same row could be updated
-	postgres_insert_query_1T = """ ALTER TABLE """ + tableName + """_""" + type
-	postgres_insert_query_2T = """  """
-	postgres_insert_query_3T = """ ADD """
-	postgres_insert_query_4T = """ ; """
-
-	for keys in dict:
-		type = """ text """
-		# space = """  """
-		if (keys == lastElement):
-			part4 = """  """
-			postgres_insert_query_2T = postgres_insert_query_2T + keys + type + part4
-		else:
-			part4 = """ , """
-			postgres_insert_query_2T = postgres_insert_query_2T + keys + type + part4 + postgres_insert_query_3T
-
-	postgres_insert_query = postgres_insert_query_1T + postgres_insert_query_3T + postgres_insert_query_2T + postgres_insert_query_4T
-	local_cursor.execute(postgres_insert_query)
-
-	# Update Table with their respective values
-
-
-#########################################################################
-def mapCreditToUser(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict):
-
-	# This will help identify which DB the action should take place in
-	creditCard = "creditCard"
-	loc = "loc"
-	other = "other"
-
-	creditTableDB(val_tableName, val_userName, creditCardDict, creditCard)
-	creditTableDB(val_tableName, val_userName, creditLineOfCreditDict, loc)
-	creditTableDB(val_tableName, val_userName, creditOtherDict, other)
-
-	insertValToIdUser_Credit(val_tableName, val_userName, creditCardDict, creditCard)
-	insertValToIdUser_Credit(val_tableName, val_userName, creditLineOfCreditDict, loc)
-	insertValToIdUser_Credit(val_tableName, val_userName, creditOtherDict, other)
-
-
-#########################################################################
 if __name__ == "__main__":
 
-	print("**********************************************************************************")
+	print("***************************************************************************************************")
 	print("Welcome to increaseCreditScore")
-	print("Tool Description")
-	print("**********************************************************************************")
+	print("This program will help the user strategize their credit to effectively increase credit score")
+	print("***************************************************************************************************")
 
 	creditCardDict = {}
 	creditLineOfCreditDict = {}
 	creditOtherDict = {}
+	mainDbDict = {}
 
 	# This will help identify which DB the action should take place in
 	creditCard = "creditCard"
 	loc = "loc"
 	other = "other"
 
-	# Future version: check for invalid characters as input
-	val = input("Is this your first time running this program: [yes | no] ")
-	if ("yes" in val):
-		val_tableName = input("Please enter your Group Name: ")
+	option = input("""Please choose from the following options: 
+	(1) Is this your first time running this program --> Type 1
+	(2) Add user to database --> Type 2 
+	(3) Configure bill payments --> Type 3 
+	(4) Configure credit limits --> Type 4  
+	(5) Get updated report --> Type 5 
+	Choice = """)
+
+	# First time running this program
+	if ("1" in option):
+		val_tableName = input("Please enter your Database Name: ")
 		val_userName = input("What is your name: ")
-		query_billsCollect_firstTime(val_tableName, val_userName, True)
+		query_billsCollect(val_tableName, val_userName, True)
 
-	elif("no" in val):
-		val_tableName = input("Please enter your Group Name: ")
-		val_decide = input("Do you want to update amount for bill payments [1] or Add user to your Family Table [2]: [ 1 | 2 ]  ")
-		if ("1" in val_decide):
+		# This will create and add details regarding your credit limit
+		creditDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict)
+		mapCreditToUser(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)
+
+	# Add user to database
+	elif ("2" in option):
+		val_tableName = input("Please enter your Database Name: ")
+		val_userName = input("What is your name: ")
+		query_billsCollect(val_tableName, val_userName, False)
+
+		# Need to have option to add credit information for other users
+
+	# Configure bill payments
+	elif ("3" in option):
+		print(".............................................................................................")
+		print("Please choose from the following:")
+		val_option = input("""
+		(1) Would you like to add additional credit card bill payments --> Type 1
+		(2) Would you like to update your current bill payments --> Type 2 
+		Choice = """)
+
+		# Add additional credit card bill payments for existing user
+		if ("1" in val_option):
+			val_tableName = input("Please enter your Database Name: ")
 			val_userName = input("What is your name: ")
-			# val_update = input("What payment would you like to update: ")
 
+			# This will create the columns
+			alterTableToAddMoreColumns(val_tableName, val_userName, mainDbDict)
+
+			# Insert values from user into Database (for other payments)
+			insertDataDBOtherPayments(val_tableName, val_userName, mainDbDict)
+
+			# Need to add data from this to the tabble
+
+		# Update your current bill payments
+		elif ("2" in val_option):
+			print("2")
+
+	# Configure credit limits
+	elif ("4" in option):
+		print(".............................................................................................")
+		print("Please choose from the following:")
+		val_option = input("""
+		(1) Would you like to add additional credit information --> Type 1
+		(2) Would you like to update your credit information --> Type 2 
+		Choice = """)
+
+		# Add additional credit information
+		if ("1" in val_option):
+			val_tableName = input("Please enter your Database Name: ")
+			val_userName = input("What is your name: ")
 			creditDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict)
 			mapCreditToUser(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)
 
-		elif ("2" in val_decide):
+		# Update your credit information
+		elif ("2" in val_option):
+			val_tableName = input("Please enter your Database Name: ")
 			val_userName = input("What is your name: ")
-			# This will not create a new group and add val_username to the same group
-			query_billsCollect_firstTime(val_tableName, val_userName, False)
+			listResults = printValuesInTable(val_tableName, val_userName)
 
-			# Other members part of the family can add data to the same DB
-			## Current problem = the DBs here are empty and you need to Alter and update the table
-			### Might become easier when you simplify code
-			# updateCreditDBOtherUser(val_tableName, val_userName, creditCardDict, creditCard)
-			# updateCreditDBOtherUser(val_tableName, val_userName, creditLineOfCreditDict, loc)
-			# updateCreditDBOtherUser(val_tableName, val_userName, creditOtherDict, other)
+			count = 1
+			for item in listResults:
+				print(count, end = ' ')
+				print(item)
+				count = count + 1
+			val_choice = input("Choice = ")
+
+			# Need to configure choice and take out id and make the change reflect onto the DB
+
+	# Get updated report
+	elif ("5" in option):
+		val_tableName = input("Please enter your Database Name: ")
+		val_userName = input("What is your name: ")
+
+		print("Please open report.txt from your current directory")
+		reportGenerate(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)
+
+
+# Other members part of the family can add data to the same DB
+## Current problem = the DBs here are empty and you need to Alter and update the table
+### Might become easier when you simplify code
+# updateCreditDBOtherUser(val_tableName, val_userName, creditCardDict, creditCard)
+# updateCreditDBOtherUser(val_tableName, val_userName, creditLineOfCreditDict, loc)
+# updateCreditDBOtherUser(val_tableName, val_userName, creditOtherDict, other)
