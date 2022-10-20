@@ -4,18 +4,21 @@
  This program will help the user strategize their credit to effectively increase credit score
 *************************************************************************************************** 
 
-td = 2000
-rbc = 200
-
-cibc = 20000
-td = 5000
-
-mastercard = 500
-
-
-This Report has been generated for: deepak
+This report has been generated for: deepak
 [deepak belongs to group: family]
-................................................................................................... 
+*************************************************************************************************** 
+
 Current Credit Card Information for deepak
+------------------------------------------------------------- 
+td = $2000      Spending Limit: $600
+rbc = $200      Spending Limit: $60
+
 Current Line of Credit Information for deepak
+------------------------------------------------------------- 
+cibc = $20000      Spending Limit: $6000
+td = $5000      Spending Limit: $1500
+
 Current Other Types of Credit Card Information for deepak
+------------------------------------------------------------- 
+mastercard = $500      Spending Limit: $150
+
