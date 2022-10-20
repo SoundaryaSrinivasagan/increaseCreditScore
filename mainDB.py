@@ -80,41 +80,20 @@ def insertDataDBOtherPayments(tableName, user, dictOfValues):
 			postgres_insert_query_2T = postgres_insert_query_2T + keys + part1 + values + part4
 
 	postgres_insert_query = postgres_insert_query_1T + postgres_insert_query_2T + postgres_insert_query_3T + postgres_insert_query_4T
-	#print(postgres_insert_query)
 	local_cursor.execute(postgres_insert_query)
 
-	'''
-	# Fetching all the rows after the update
-	sql = SELECT * from family add the appos
-	local_cursor.execute(sql)
-	print(local_cursor.fetchall())
-	'''
 #########################################################################
 # Print values in table
 def printValuesInTable(val_tableName, val_userName):
 	local_cursor = connectToDB()
-
 	sql = """SELECT COLUMN_NAME FROM """ + """ INFORMATION_SCHEMA.COLUMNS """ + """ WHERE TABLE_NAME = """ + """ \'""" + val_tableName + """\' """ + """ ORDER BY ORDINAL_POSITION """ + """ ; """
-
 	local_cursor.execute(sql)
 	results = local_cursor.fetchall()
-	#print (results)
-
-	#for result in results:
-	#print(result)
-	#print("Id = ", result[0], )
-	#print("Car Insurance = ", result[1])
-	#print("Gym = ", result[2])
-	#print("Internet = ", result[3])
-	#print("Phone = ", result[4])
-	#print("Loans = ", result[5])
 
 	return results
 
 #########################################################################
 def alterTableToAddMoreColumns(tableName, user, otherItemsList):
-	# Dictionary to add all other types of payments
-	#otherItemsList = {}
 	local_cursor = connectToDB()
 
 	val_other = input("Please enter the name of the payment:  ")
@@ -153,7 +132,6 @@ def alterTableToAddMoreColumns(tableName, user, otherItemsList):
 	local_cursor.execute(postgres_insert_query)
 
 	# Update values for all the keys in the dict
-	# print(otherItemsList)
 	insertDataDBOtherPayments(tableName, user, otherItemsList)
 
 
@@ -178,12 +156,7 @@ def query_billsCollect(val_tableName, val_userName, flag):
 	if (('y' in val_other) and (flag == False)):
 		# Insert values from user into Database
 		insertDataDB(val_tableName, val_userName, val_carInsurance, val_gym, val_internet, val_phone, val_loans)
-
 		alterTableToAddMoreColumns(val_tableName, val_userName, otherItemsList)
-
-		# Update values for all the keys in the dict
-		# insertDataDBOtherPayments(val_tableName, val_userName, otherItemsList)
-
 		print("\n")
 
 	elif ('y' in val_other):

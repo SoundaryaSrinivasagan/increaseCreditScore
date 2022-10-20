@@ -26,6 +26,13 @@ def reportGenerate(val_tableName, val_userName, creditCardDict, creditLineOfCred
     # Generate the header in the text file
     generateHeader(val_userName, val_tableName)
 
+    with open('report.txt', 'a') as f:
+        f.write("SECTION 1:\n")
+        f.write(dots)
+        f.write("How much should I spend?")
+        f.write(newline)
+        f.write(newline)
+
     # Print out all the data that userName has in a list format
     # result = printMainDB(val_tableName, val_userName)
     # f.writelines([f"{line}\n" for line in result])
