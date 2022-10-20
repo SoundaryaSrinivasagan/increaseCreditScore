@@ -8,6 +8,10 @@ This report has been generated for: deepak
 [deepak belongs to group: family]
 *************************************************************************************************** 
 
+SECTION 1:
+................................................................................................... 
+How much should I spend?
+
 Current Credit Card Information for deepak
 ------------------------------------------------------------- 
 td = $2000      Spending Limit: $600
