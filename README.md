@@ -29,10 +29,16 @@ The main group database is:
 
 **groupName**: Contains information on all the bill payments that occur in a credit card for every user in the group
 
-| Functions | Description |
-|-----------|-------------|
-| `name`    | Description |
-| `name`    | Description |
+| Functions       | Description                                                                                                                                           |
+|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `connectToDB()` | This function returns a cursor which can be used to initiate a connection to the database and perform SQL operations                                  |
+| `connectDBCreateTable(name_Table, dictOfValues)`  | This function implements the CREATE TABLE SQL command                                                                                                 |
+| `insertDataDB(tableName, name, carInsurance, gym, internet, phone, loans)`  | This function implements the INSERT INTO SQL command                                                                                                  |
+| `insertDataDBOtherPayments(tableName, user, dictOfValues)`  | This function implements the UPDATE SQL command                                                                                                       |
+| `printValuesInTable(val_tableName, val_userName)`  | This function returns all of the column headers in the database table as a list of tuple                                                              |
+| `alterTableToAddMoreColumns(tableName, user, otherItemsList)`  | This function implements the ALTER TABLE SQL command                                                                                                  |
+| `query_billsCollect(val_tableName, val_userName, flag)`  | This function collects information from the user and uses the other functions in this document to create/update credit tables for all credit products |
+
 
 #### < creditDB.py >
 This file is responsible for creating/updating the credit tables for the credit databases. 
@@ -92,6 +98,7 @@ the product more user-friendly and allow for easier distribution.
 
 ## <ins> Testing
 A simple trial/error testing method was implemented during the development of this product, however, Unit Testing is yet to be implemented. 
+
 A thorough analysis will be done to see if the product works as intended in version 2 release.
 
 ## <ins> Improvements
