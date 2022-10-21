@@ -10,7 +10,7 @@ Moreover, the General Re-Payment Date feature would take information on when the
 a general day based on a 15-day grace period that the user can pay off their full balance or atleast make minimum payments. This would allow the user
 to remember 1-2 days every month instead of multiple days based off their credit products.
     
-**Sample Report**: ![architecture](https://user-images.githubusercontent.com/106931132/197216617-206f237a-7a0e-4424-9c87-e9b0b9432059.png)
+**Sample Report**: [report.txt](https://github.com/SoundaryaSrinivasagan/increaseCreditScore/files/9839802/report.txt)
 
 
 __Targeted User:__ The product will be really useful for people with low to no credit or people that just want to increase their score in general.
