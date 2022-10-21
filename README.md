@@ -60,14 +60,6 @@ the product more user-friendly and allow for easier distribution.
 A simple trial/error testing method was implemented during the development of this product, however, Unit Testing is yet to be implemented. 
 A thorough analysis will be done to see if the product works as intended in version 2 release.
 
-#### Register Checkout System
-
-![my image](./assets/checkout_counter_test.png)
-
-#### Inventory Management System
-
-![my image](./assets/inventory_managment_test.png)
-
 ## <ins> Improvements
 For version 2 release, the following improvements will be made:
 - Test the product thoroughly 
