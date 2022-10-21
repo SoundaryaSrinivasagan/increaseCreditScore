@@ -6,7 +6,8 @@
 
 import psycopg2
 from mainDB import *
-
+from report import *
+from dateDB import *
 
 #########################################################################
 def creditDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict):
@@ -38,9 +39,9 @@ def creditDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict):
 		val_otherCredit = input("Do you have any other credit products? [ y | n ]   ")
 	print(".............................................................................................")
 
-	print(creditCardDict)
-	print(creditLineOfCreditDict)
-	print(creditOtherDict)
+	#print(creditCardDict)
+	#print(creditLineOfCreditDict)
+	#print(creditOtherDict)
 
 #########################################################################
 def creditTableDB(val_tableName, val_userName, dict, type):
@@ -83,7 +84,6 @@ def insertValToIdUser_Credit(tableName, val_userName, dict, type):
 	postgres_insert_query_1T = """ INSERT INTO """ + tableName + """_""" + type + """ ( id, """
 	postgres_insert_query_2T = """  """
 	postgres_insert_query_3T = """  VALUES ( """ + """ \' """  + val_userName + """ \', """ + """ """
-	#postgres_insert_query_4T = """ WHERE id =  """ + val_userName + """ ; """
 
 	# Map keys into Insert Into SQL statement
 	for keys in dict:
@@ -107,8 +107,6 @@ def insertValToIdUser_Credit(tableName, val_userName, dict, type):
 			postgres_insert_query_2TT = postgres_insert_query_2TT + part_val + values  + part41
 
 	postgres_insert_query = postgres_insert_query_1T + postgres_insert_query_2T + postgres_insert_query_3T + postgres_insert_query_2TT
-
-	print(postgres_insert_query)
 	local_cursor.execute(postgres_insert_query)
 
 #########################################################################
@@ -116,7 +114,7 @@ def updateCreditDBOtherUser(tableName, userName, dict, type):
 	local_cursor = connectToDB()
 
 	# Alter Table to add more columns
-	key = list(otherItemsList.keys())
+	key = list(dict.keys())
 	lastElement = key[-1]
 
 	# Use Update statement so that the same row could be updated
@@ -126,16 +124,20 @@ def updateCreditDBOtherUser(tableName, userName, dict, type):
 	postgres_insert_query_4T = """ ; """
 
 	for keys in dict:
-		type = """ text """
-		# space = """  """
-		if (keys == lastElement):
-			part4 = """  """
-			postgres_insert_query_2T = postgres_insert_query_2T + keys + type + part4
-		else:
-			part4 = """ , """
-			postgres_insert_query_2T = postgres_insert_query_2T + keys + type + part4 + postgres_insert_query_3T
+		# Check to see if key exists already in database headers
+		results = getCreditHeadersInDB(val_tableName, type)
+		if (keys not in results):
+			type = """ text """
+			# space = """  """
+			if (keys == lastElement):
+				part4 = """  """
+				postgres_insert_query_2T = postgres_insert_query_2T + keys + type + part4
+			else:
+				part4 = """ , """
+				postgres_insert_query_2T = postgres_insert_query_2T + keys + type + part4 + postgres_insert_query_3T
 
 	postgres_insert_query = postgres_insert_query_1T + postgres_insert_query_3T + postgres_insert_query_2T + postgres_insert_query_4T
+	print(postgres_insert_query)
 	local_cursor.execute(postgres_insert_query)
 
 	# Update Table with their respective values

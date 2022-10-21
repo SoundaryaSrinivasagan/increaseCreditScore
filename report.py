@@ -11,6 +11,7 @@ from creditDB import *
 
 line = """*************************************************************************************************** \n"""
 dots = """................................................................................................... \n"""
+at =   """@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ \n"""
 newline= "\n"
 
 # This will help identify which DB the action should take place in
@@ -22,13 +23,20 @@ credit = "Credit Card"
 lineOfCredit = "Line of Credit"
 otherCredit = "Other Types of Credit Card"
 
+# This will help identify which DB the action should take place in for statement date information
+creditCardDate = "creditcarddate"
+locDate = "locdate"
+otherDate = "otherdate"
+
 def reportGenerate(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict):
     # Generate the header in the text file
     generateHeader(val_userName, val_tableName)
 
+    # Section 1: How much should I spend?
+    ##################################################
     with open('report.txt', 'a') as f:
         f.write("SECTION 1:\n")
-        f.write(dots)
+        f.write(at)
         f.write("How much should I spend?")
         f.write(newline)
         f.write(newline)
@@ -74,6 +82,93 @@ def reportGenerate(val_tableName, val_userName, creditCardDict, creditLineOfCred
     # Print the value beside the header in the report
     printValBesideHeader(val_userName, other_headers, card_other_TupToString, otherCredit)
 
+    # Section 2: When should I pay my Credit Cards?
+    ##################################################
+    with open('report.txt', 'a') as f:
+        f.write("SECTION 2:\n")
+        f.write(at)
+        f.write("When should I pay my Credit Cards?")
+        f.write(newline)
+        f.write(newline)
+
+        # Query from both credit date databases and store them as a list
+        # Generate Credit info for userNamer
+        #################################################################################################
+        # Get credit information from database for user
+        credit_card_date = getCreditInfo(val_tableName, val_userName, creditCardDict, creditCardDate)
+        # Convert and modify headers list from tuple to list of strings
+        card_card_TupToString_date = convertTupToStringMod(credit_card_date)
+        # Get credit headers from database for user
+        credit_card_headers_date = getCreditHeadersInDB(val_tableName, creditCardDate)
+        # Convert and modify headers list from tuple to list of strings
+        card_headers_date = convertTupToStringMod(credit_card_headers_date)
+
+        # Store the db in a dict
+        d_creditdate = {}
+        for (i,j) in zip(card_headers_date,card_card_TupToString_date):
+            singleDicts = dict(zip([i], [j]))
+            d_creditdate.update(singleDicts)
+
+        # Generate Other types of Credit info for userNamer
+        #################################################################################################
+        other_credit_date = getCreditInfo(val_tableName, val_userName, creditOtherDict, otherDate)
+        # Convert and modify headers list from tuple to list of strings
+        card_other_TupToString_date = convertTupToStringMod(other_credit_date)
+        # Get credit headers from database for user
+        other_credit_headers_date = getCreditHeadersInDB(val_tableName, otherDate)
+        # Convert and modify headers list from tuple to list of strings
+        other_headers_date = convertTupToStringMod(other_credit_headers_date)
+
+       # Store results in d_creditdate
+        for (i,j) in zip(other_headers_date, card_other_TupToString_date):
+            singleDicts = dict(zip([i], [j]))
+            d_creditdate.update(singleDicts)
+
+        # Delete id from dictionary
+        del d_creditdate['id']
+        print(d_creditdate)
+
+        for k,v in d_creditdate.items():
+            d_creditdate.update({k : int(v)})
+
+        # Max and min from dict
+        key_max = max(d_creditdate.keys(), key=(lambda k: d_creditdate[k]))
+        key_min = min(d_creditdate.keys(), key=(lambda k: d_creditdate[k]))
+
+        # Considering that there is on average a 21-day grace period
+        # If min + 15 (days considering bank holidays) < max, we need to pay it off before max date
+        f.write("Recommended day to pay full statement balance or atleast minimum payment \n")
+        f.write("------------------------------------------------------------------------- \n")
+        minn_dict = {}
+        max_dict = {}
+        datee = 0
+        minimumValue = d_creditdate[key_min]
+        maximumValue = d_creditdate[key_max]
+        minn = minimumValue + 15
+        if (minn <= maximumValue):
+            for k,v in d_creditdate.items():
+                if (v < minn):
+                    minn_dict.update({k:v})
+                else:
+                    max_dict.update({k:v})
+
+            f.write("The following credit cards: ")
+            for item in minn_dict:
+                f.write(item + ", ")
+            f.write("should be paid off by this day of each month: " + str(minn))
+            f.write(newline)
+            # For Max dates
+            f.write("The following credit cards: ")
+            for item in max_dict:
+                f.write(item + ", ")
+            f.write("should be paid off by this day of each month: " + str(maximumValue))
+            f.write(newline)
+        else:
+            f.write("The following credit cards: ")
+            for item in d_creditdate:
+                f.write(item + ", ")
+            f.write("should be paid off by this day of each month: " + str(minn))
+
 
 def generateHeader(val_userName, val_tableName):
     with open('report.txt', 'w') as f:
@@ -102,8 +197,6 @@ def getCreditInfo(val_tableName, val_userName, dict, type):
     local_cursor.execute(sql_id)
     results = local_cursor.fetchall()
 
-    #with open('report.txt', 'a') as f:
-    #    f.writelines([f"{line}\n" for line in results])
     return results
 
 def getCreditHeadersInDB(val_tableName, type):
