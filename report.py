@@ -137,8 +137,8 @@ def reportGenerate(val_tableName, val_userName, creditCardDict, creditLineOfCred
 
         # Considering that there is on average a 21-day grace period
         # If min + 15 (days considering bank holidays) < max, we need to pay it off before max date
-        f.write("Recommended day to pay minimum or full statement balance \n")
-        f.write("------------------------------------------------------------- \n")
+        f.write("Recommended day to pay full statement balance or atleast minimum payment \n")
+        f.write("------------------------------------------------------------------------- \n")
         minn_dict = {}
         max_dict = {}
         datee = 0
@@ -168,7 +168,6 @@ def reportGenerate(val_tableName, val_userName, creditCardDict, creditLineOfCred
             for item in d_creditdate:
                 f.write(item + ", ")
             f.write("should be paid off by this day of each month: " + str(minn))
-
 
 
 def generateHeader(val_userName, val_tableName):
