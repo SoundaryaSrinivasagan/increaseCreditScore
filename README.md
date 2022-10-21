@@ -23,7 +23,7 @@ __Technologies:__
 
 ![my image](./assets/architecture.png)
 
-#### mainDB.py
+#### < mainDB.py >
 This file is responsible for creating/updating the group table in the main database. 
 The main group database is: 
 
@@ -34,7 +34,7 @@ The main group database is:
 | `name`    | Description |
 | `name`    | Description |
 
-#### creditDB.py
+#### < creditDB.py >
 This file is responsible for creating/updating the credit tables for the credit databases. 
 The three credit databases are: 
 
@@ -50,7 +50,7 @@ The three credit databases are:
 | `name`    | Description |
 
 
-#### dateDB.py
+#### < dateDB.py >
 This file is responsible for creating/updating the credit tables for the credit databases. 
 The three credit databases are: 
 
@@ -63,7 +63,7 @@ The three credit databases are:
 | `name`    | Description |
 | `name`    | Description |
 
-#### report.py
+#### < report.py >
 This file is responsible for creating the `report.txt` file that will have information on the **Spending Limit** and **General Re-Payment Date**
 
 | Functions | Description |
