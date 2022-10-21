@@ -138,6 +138,7 @@ def MapVal(val_tableName, val_userName, dict, type):
         # Insert values into rows
         insertDataDBOtherPayments(val_tableName, val_userName, dict, type)
 
+## RESOLVE IMPORT ERROR AND TAKE OFF THE FOLLOWING FUNCTIONS FROM BELOW
 #########################################################################
 def creditTableDB(val_tableName, val_userName, dict, type):
     local_cursor = connectToDB()

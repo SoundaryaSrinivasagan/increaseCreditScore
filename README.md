@@ -25,23 +25,25 @@ __Technologies:__
 
 #### < mainDB.py >
 This file is responsible for creating/updating the group table in the main database. 
+
 The main group database is: 
 
 **groupName**: Contains information on all the bill payments that occur in a credit card for every user in the group
 
-| Functions       | Description                                                                                                                                           |
-|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `connectToDB()` | This function returns a cursor which can be used to initiate a connection to the database and perform SQL operations                                  |
-| `connectDBCreateTable(name_Table, dictOfValues)`  | This function implements the CREATE TABLE SQL command                                                                                                 |
-| `insertDataDB(tableName, name, carInsurance, gym, internet, phone, loans)`  | This function implements the INSERT INTO SQL command                                                                                                  |
-| `insertDataDBOtherPayments(tableName, user, dictOfValues)`  | This function implements the UPDATE SQL command                                                                                                       |
-| `printValuesInTable(val_tableName, val_userName)`  | This function returns all of the column headers in the database table as a list of tuple                                                              |
-| `alterTableToAddMoreColumns(tableName, user, otherItemsList)`  | This function implements the ALTER TABLE SQL command                                                                                                  |
-| `query_billsCollect(val_tableName, val_userName, flag)`  | This function collects information from the user and uses the other functions in this document to create/update credit tables for all credit products |
+| Functions       | Description                                                                                                                                     |
+|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `connectToDB()` | This function returns a cursor which can be used to initiate a connection to the database and perform SQL operations                            |
+| `connectDBCreateTable(name_Table, dictOfValues)`  | This function implements the CREATE TABLE SQL command                                                                                           |
+| `insertDataDB(tableName, name, carInsurance, gym, internet, phone, loans)`  | This function implements the INSERT INTO SQL command                                                                                            |
+| `insertDataDBOtherPayments(tableName, user, dictOfValues)`  | This function implements the UPDATE SQL command                                                                                                 |
+| `printValuesInTable(val_tableName, val_userName)`  | This function returns all of the column headers in the database table as a list of tuple                                                        |
+| `alterTableToAddMoreColumns(tableName, user, otherItemsList)`  | This function implements the ALTER TABLE SQL command                                                                                            |
+| `query_billsCollect(val_tableName, val_userName, flag)`  | This function collects information on bill payments from the user and uses the other functions in this document to create/update the main table |
 
 
 #### < creditDB.py >
 This file is responsible for creating/updating the credit tables for the credit databases. 
+
 The three credit databases are: 
 
 **groupName_creditcard**: Contains information on the credit cards that every user of the group has
@@ -50,38 +52,44 @@ The three credit databases are:
 
 **groupName_other**: Contains information on other credit cards/products that every user of the group has
 
-| Functions | Description |
-|-----------|-------------|
-| `name`    | Description |
-| `name`    | Description |
-
+| Functions | Description                                                                                                                                                       |
+|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `creditDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict)`    | This function collect credit product information from the user and stores the results into three dictionaries (credit card, line of credit, other credit products) |
+| `creditTableDB(val_tableName, val_userName, dict, type)`    | This function implements the CREATE TABLE SQL command                                                                                                             |
+| `insertValToIdUser_Credit(tableName, val_userName, dict, type)`    | This function implements the INSERT INTO SQL command                                                                                                              |
+| `updateCreditDBOtherUser(tableName, userName, dict, type)`    | This function implements the ALTER TABLE SQL command                                                                                                              |
+| `mapCreditToUser(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)`    | This function will call the `creditTableDB()` and `insertValToIdUser_Credit` functions                                                                                                      |
 
 #### < dateDB.py >
 This file is responsible for creating/updating the credit tables for the credit databases. 
+
 The three credit databases are: 
 
 **groupName_creditcarddate**: Contains information on when the statement generates for all the credit cards that every user of the group has
 
 **groupName_otherdate**: Contains information on when the statement generates for all the other credit cards/products that every user of the group has
 
-| Functions | Description |
-|-----------|-------------|
-| `name`    | Description |
-| `name`    | Description |
+| Functions | Description                                                                                          |
+|-----------|------------------------------------------------------------------------------------------------------|
+| `dateDetails(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)`    | This function will collect details on your when your statement generates for all your credit sources |
+| `getCreditInfoFromDict(val_tableName, val_userName, dict, type)`    | This function extracts all the credit data from the tables and outputs them as a list of tuples      |
+| `createTable(val_tableName, val_userName, dict, type)`    | This function will call the `creditTableDB()` and `insertValToIdUser_Credit` functions               |
+| `MapVal(val_tableName, val_userName, dict, type)`    | This functions is responsible for inserting values into the credit tables                            |
+
 
 #### < report.py >
 This file is responsible for creating the `report.txt` file that will have information on the **Spending Limit** and **General Re-Payment Date**
 
-| Functions | Description |
-|-----------|-------------|
-| `name`    | Description |
-| `name`    | Description |
+| Functions                                                                                                       | Description                                                                                                   |
+|-----------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| `reportGenerate(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)`          | This function is the main function that is responsible for creating the report                                |
+| `generateHeader(val_userName, val_tableName)`                                                                   | This function is responsible for creating the title/header details in the report                              |
+| `printMainDB(val_tableName, val_userName)` <br/> getCreditInfo(val_tableName, val_userName, dict, type) <br/>  getCreditHeadersInDB(val_tableName, type) | These functions are responsible for retrieving data/header information from the credit tables in the database |
+| `convertTupToStringMod(dict)`                                                                                                          | This function converts the input dictionary from tuples to a list of strings                                  |
+| `printValBesideHeader(val_userName, credit_header_info, credit_dbinfo, type)`                                                                                                          | This function will allow the headers and values to be printed side by side in the main report                 |
 
 ## <ins> Product Usage
 When you boot up the product, you will be prompted with the following 5 responses.
-Please note that options (3) and (4) have not been completely implemented, these would allow
-the user to add additional credit information for a secondary user in the same group or add/update 
-current bill payments.
 
     Please choose from the following options:
         (1) Is this your first time running this program --> Type 1
