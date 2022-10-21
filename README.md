@@ -63,7 +63,7 @@ The three credit databases are:
 #### < dateDB.py >
 This file is responsible for creating/updating the credit tables for the credit databases. 
 
-The three credit databases are: 
+The three credit date databases are: 
 
 **groupName_creditcarddate**: Contains information on when the statement generates for all the credit cards that every user of the group has
 
