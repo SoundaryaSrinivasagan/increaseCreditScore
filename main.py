@@ -34,7 +34,6 @@ if __name__ == "__main__":
 	(3) Configure bill payments --> Type 3 
 	(4) Configure credit limits --> Type 4  
 	(5) Get updated report --> Type 5 
-	(6) Test
 	Choice = """)
 
 	# First time running this program
@@ -48,7 +47,10 @@ if __name__ == "__main__":
 		mapCreditToUser(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)
 
 		# This will collect information on when the statement is due for each credit that was entered in the section before
-		dateDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict)
+		dateDetails(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)
+
+		# This will collect information on when the statement is due for each credit that was entered in the section before
+		#dateDetails(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)
 
 	# Add user to database
 	elif ("2" in option):
@@ -124,12 +126,6 @@ if __name__ == "__main__":
 
 		print("Please open report.txt from your current directory")
 		reportGenerate(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)
-
-	elif ("6" in option):
-		val_tableName = input("Please enter your Database Name: ")
-		val_userName = input("What is your name: ")
-		# This will collect information on when the statement is due for each credit that was entered in the section before
-		dateDetails(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)
 
 
 # Other members part of the family can add data to the same DB

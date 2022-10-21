@@ -4,27 +4,26 @@
  This program will help the user strategize their credit to effectively increase credit score
 *************************************************************************************************** 
 
-This report has been generated for: deepak
-[deepak belongs to group: family]
+This report has been generated for: joe
+[joe belongs to group: test]
 *************************************************************************************************** 
 
 SECTION 1:
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 
 How much should I spend?
 
-Current Credit Card Information for deepak
+Current Credit Card Information for joe
 ------------------------------------------------------------- 
-td = $2000      Spending Limit: $600
-rbc = $200      Spending Limit: $60
-
-Current Line of Credit Information for deepak
-------------------------------------------------------------- 
-cibc = $20000      Spending Limit: $6000
+rbc = $2000      Spending Limit: $600
 td = $5000      Spending Limit: $1500
 
-Current Other Types of Credit Card Information for deepak
+Current Line of Credit Information for joe
 ------------------------------------------------------------- 
-mastercard = $500      Spending Limit: $150
+cibc = $20000      Spending Limit: $6000
+
+Current Other Types of Credit Card Information for joe
+------------------------------------------------------------- 
+mastercard = $2000      Spending Limit: $600
 
 SECTION 2:
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 
@@ -32,5 +31,4 @@ When should I pay my Credit Cards?
 
 Recommended day to pay full statement balance or atleast minimum payment 
 ------------------------------------------------------------------------- 
-The following credit cards: td, rbc, should be paid off by this day of each month: 17
-The following credit cards: mastercard, should be paid off by this day of each month: 23
+The following credit cards: rbc, td, mastercard, should be paid off by this day of each month: 18
