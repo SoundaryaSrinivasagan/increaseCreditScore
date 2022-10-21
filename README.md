@@ -23,26 +23,59 @@ __Technologies:__
 
 ![my image](./assets/architecture.png)
 
-#### Register Checkout System
-The Register Checkout System will assist with finding the total cost of all the items in a customer’s cart, including taxes.
+#### mainDB.py
+This file is responsible for creating/updating the group table in the main database. 
+The main group database is: 
+
+**groupName**: Contains information on all the bill payments that occur in a credit card for every user in the group
 
 | Functions | Description |
 |-----------|-------------|
 | `name`    | Description |
 | `name`    | Description |
 
-#### Inventory Management System
-The Inventory Management System can be used to keep a track of how much items we have of a certain product as well as add/remove items from the inventory.
+#### creditDB.py
+This file is responsible for creating/updating the credit tables for the credit databases. 
+The three credit databases are: 
+
+**groupName_creditcard**: Contains information on the credit cards that every user of the group has
+
+**groupName_loc**: Contains information on line of credit products that the every user of the group has
+
+**groupName_other**: Contains information on other credit cards/products that every user of the group has
 
 | Functions | Description |
 |-----------|-------------|
 | `name`    | Description |
 | `name`    | Description |
 
+
+#### dateDB.py
+This file is responsible for creating/updating the credit tables for the credit databases. 
+The three credit databases are: 
+
+**groupName_creditcarddate**: Contains information on when the statement generates for all the credit cards that every user of the group has
+
+**groupName_otherdate**: Contains information on when the statement generates for all the other credit cards/products that every user of the group has
+
+| Functions | Description |
+|-----------|-------------|
+| `name`    | Description |
+| `name`    | Description |
+
+#### report.py
+This file is responsible for creating the `report.txt` file that will have information on the **Spending Limit** and **General Re-Payment Date**
+
+| Functions | Description |
+|-----------|-------------|
+| `name`    | Description |
+| `name`    | Description |
 
 ## <ins> Product Usage
 When you boot up the product, you will be prompted with the following 5 responses.
-
+Please note that options (3) and (4) have not been completely implemented, these would allow
+the user to add additional credit information for a secondary user in the same group or add/update 
+current bill payments.
 
     Please choose from the following options:
         (1) Is this your first time running this program --> Type 1
@@ -52,9 +85,10 @@ When you boot up the product, you will be prompted with the following 5 response
         (5) Get updated report --> Type 5
         Choice = 
 
+*Please find your report.txt file from option (5) in the directory that you ran your script from*
+
 The goal is to publish this product in an .exe format and eventually as a web application. The web application would make
 the product more user-friendly and allow for easier distribution.
-
 
 ## <ins> Testing
 A simple trial/error testing method was implemented during the development of this product, however, Unit Testing is yet to be implemented. 

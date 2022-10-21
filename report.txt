@@ -4,24 +4,33 @@
  This program will help the user strategize their credit to effectively increase credit score
 *************************************************************************************************** 
 
-This report has been generated for: soundarya
-[soundarya belongs to group: family]
+This report has been generated for: deepak
+[deepak belongs to group: family]
 *************************************************************************************************** 
 
 SECTION 1:
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 
 How much should I spend?
 
-Current Credit Card Information for soundarya
+Current Credit Card Information for deepak
 ------------------------------------------------------------- 
+td = $2000      Spending Limit: $600
+rbc = $200      Spending Limit: $60
 
-Current Line of Credit Information for soundarya
+Current Line of Credit Information for deepak
 ------------------------------------------------------------- 
+cibc = $20000      Spending Limit: $6000
+td = $5000      Spending Limit: $1500
 
-Current Other Types of Credit Card Information for soundarya
+Current Other Types of Credit Card Information for deepak
 ------------------------------------------------------------- 
+mastercard = $500      Spending Limit: $150
 
 SECTION 2:
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 
 When should I pay my Credit Cards?
 
+Recommended day to pay full statement balance or atleast minimum payment 
+------------------------------------------------------------------------- 
+The following credit cards: td, rbc, should be paid off by this day of each month: 17
+The following credit cards: mastercard, should be paid off by this day of each month: 23
