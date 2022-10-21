@@ -8,14 +8,15 @@ import psycopg2
 from mainDB import *
 from creditDB import *
 from report import *
+from dateDB import *
 
 
 if __name__ == "__main__":
 
-	print("***************************************************************************************************")
+	print("*************************************************************************************************************")
 	print("Welcome to increaseCreditScore")
-	print("This program will help the user strategize their credit to effectively increase credit score")
-	print("***************************************************************************************************")
+	print("This program will help the user strategize their credit usage to effectively increase their credit score")
+	print("*************************************************************************************************************")
 
 	creditCardDict = {}
 	creditLineOfCreditDict = {}
@@ -33,6 +34,7 @@ if __name__ == "__main__":
 	(3) Configure bill payments --> Type 3 
 	(4) Configure credit limits --> Type 4  
 	(5) Get updated report --> Type 5 
+	(6) Test
 	Choice = """)
 
 	# First time running this program
@@ -44,6 +46,9 @@ if __name__ == "__main__":
 		# This will create and add details regarding your credit limit
 		creditDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict)
 		mapCreditToUser(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)
+
+		# This will collect information on when the statement is due for each credit that was entered in the section before
+		dateDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict)
 
 	# Add user to database
 	elif ("2" in option):
@@ -73,7 +78,9 @@ if __name__ == "__main__":
 			# Insert values from user into Database (for other payments)
 			insertDataDBOtherPayments(val_tableName, val_userName, mainDbDict)
 
-			# Need to add data from this to the tabble
+			# Need to add data from this to the table
+			dateDetails(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)
+
 
 		# Update your current bill payments
 		elif ("2" in val_option):
@@ -117,6 +124,12 @@ if __name__ == "__main__":
 
 		print("Please open report.txt from your current directory")
 		reportGenerate(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)
+
+	elif ("6" in option):
+		val_tableName = input("Please enter your Database Name: ")
+		val_userName = input("What is your name: ")
+		# This will collect information on when the statement is due for each credit that was entered in the section before
+		dateDetails(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)
 
 
 # Other members part of the family can add data to the same DB

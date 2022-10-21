@@ -102,8 +102,6 @@ def getCreditInfo(val_tableName, val_userName, dict, type):
     local_cursor.execute(sql_id)
     results = local_cursor.fetchall()
 
-    #with open('report.txt', 'a') as f:
-    #    f.writelines([f"{line}\n" for line in results])
     return results
 
 def getCreditHeadersInDB(val_tableName, type):
