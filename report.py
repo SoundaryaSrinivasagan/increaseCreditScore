@@ -4,11 +4,16 @@
 # Version: Version_1
 # Description: This script will help create the final report
 
-import re
+# We need this python package to be able to communicate with the PostgreSQL Database
 import psycopg2
+
+# Imports the regular expressions package to help us match patterns
+import re
+
 from mainDB import *
 from creditDB import *
 
+# Used for formatting the report
 line = """*************************************************************************************************** \n"""
 dots = """................................................................................................... \n"""
 at =   """@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ \n"""
@@ -19,6 +24,7 @@ creditCard = "creditcard"
 loc = "loc"
 other = "other"
 
+# Used for formatting the report
 credit = "Credit Card"
 lineOfCredit = "Line of Credit"
 otherCredit = "Other Types of Credit Card"
@@ -28,6 +34,13 @@ creditCardDate = "creditcarddate"
 locDate = "locdate"
 otherDate = "otherdate"
 
+########################################################################################################################
+# Description: This function is the main function that is responsible for creating the report
+# Input: val_tableName [String] = Name of the table entered by the user
+#     	 val_userName [String] = Name of user
+#        creditCardDict, creditLineOfCreditDict, creditOtherDict [ Dict of Strings: Ints] = These dictionaries will contain information that the user entered in this section
+# Output: Main function to generate the report.txt
+########################################################################################################################
 def reportGenerate(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict):
     # Generate the header in the text file
     generateHeader(val_userName, val_tableName)
@@ -169,7 +182,12 @@ def reportGenerate(val_tableName, val_userName, creditCardDict, creditLineOfCred
                 f.write(item + ", ")
             f.write("should be paid off by this day of each month: " + str(minn))
 
-
+########################################################################################################################
+# Description: This function is responsible for creating the title/header details in the report
+# Input: val_tableName [String] = Name of the table entered by the user
+#     	 val_userName [String] = Name of user
+# Output: Creates the header formatting in the report
+########################################################################################################################
 def generateHeader(val_userName, val_tableName):
     with open('report.txt', 'w') as f:
         f.write(newline)
@@ -183,6 +201,12 @@ def generateHeader(val_userName, val_tableName):
         f.write("[" + val_userName + " belongs to group: " + val_tableName + "]" + newline)
         f.write(line + newline)
 
+########################################################################################################################
+# Description: This function is responsible for retrieving data/header information from the credit tables in the database
+# Input: val_tableName [String] = Name of the table entered by the user
+#     	 val_userName [String] = Name of user
+# Output: Results returns all the data from the table as a list of tuples
+########################################################################################################################
 def printMainDB(val_tableName, val_userName):
     local_cursor = connectToDB()
     sql_id = """SELECT * FROM """ + val_tableName + """ WHERE id = """ + """ \' """ + val_userName + """ \' """ + """ ; """
@@ -191,6 +215,14 @@ def printMainDB(val_tableName, val_userName):
 
     return results
 
+########################################################################################################################
+# Description: This function returns all the column headers in the database table as a list of tuple
+# Input: val_tableName [String] = Name of the table entered by the user
+#     	 val_userName [String] = Name of user
+#        dict [Dict of Strings: Ints] = Refers to one of the following dicts (creditCardDict, creditLineOfCreditDict, creditOtherDict) with the user credit information
+#        type [String] = This aids in naming the tables with the following format (groupName_type - for ex: groupName_creditcarddate)
+# Output: Results returns all the column headers of the database table as a list of tuples
+########################################################################################################################
 def getCreditInfo(val_tableName, val_userName, dict, type):
     local_cursor = connectToDB()
     sql_id = """SELECT * FROM """ + val_tableName + """_""" + type + """ WHERE id = """ + """ \' """ + val_userName + """ \' """ + """ ; """
@@ -199,6 +231,14 @@ def getCreditInfo(val_tableName, val_userName, dict, type):
 
     return results
 
+########################################################################################################################
+# Description: This function returns all the column headers in the database table as a list of tuple
+# Input: val_tableName [String] = Name of the table entered by the user
+#     	 val_userName [String] = Name of user
+#        dict [Dict of Strings: Ints] = Refers to one of the following dicts (creditCardDict, creditLineOfCreditDict, creditOtherDict) with the user credit information
+#        type [String] = This aids in naming the tables with the following format (groupName_type - for ex: groupName_creditcarddate)
+# Output: Results returns all the column headers of the database table as a list of tuples
+########################################################################################################################
 def getCreditHeadersInDB(val_tableName, type):
     local_cursor = connectToDB()
     sql = """SELECT COLUMN_NAME FROM """ + """ INFORMATION_SCHEMA.COLUMNS """ + """ WHERE TABLE_NAME = """ + """ \'""" + val_tableName + """_""" + type + """\' """ + """ ORDER BY ORDINAL_POSITION """ + """ ; """
@@ -207,6 +247,11 @@ def getCreditHeadersInDB(val_tableName, type):
 
     return results
 
+########################################################################################################################
+# Description: This function converts the input dictionary from tuples to a list of strings
+# Input: dict [Dict of Strings: Ints] = Refers to one of the following dicts (creditCardDict, creditLineOfCreditDict, creditOtherDict) with the user credit information
+# Output: Part0 refers to a list of strings which will be easier to manipulate and format for the report
+########################################################################################################################
 def convertTupToStringMod(dict):
     convertTupToString = '.. '.join(map(str, dict))
     x = list(convertTupToString.split(","))
@@ -219,6 +264,14 @@ def convertTupToStringMod(dict):
 
     return part0
 
+########################################################################################################################
+# Description: This function will allow the headers and values to be printed side by side in the main report
+# Input: val_tableName [String] = Name of the table entered by the user
+#     	 credit_header_info [List of Strings] = Contains credit header info for the report
+#        credit_dbinfo [List of Strings] = Contains credit values info for the report
+#        type [String] = This aids in naming the tables with the following format (groupName_type - for ex: groupName_creditcarddate)
+# Output: This function will allow the headers and values to be printed side by side in the main report
+########################################################################################################################
 def printValBesideHeader(val_userName, credit_header_info, credit_dbinfo, type):
     with open("report.txt", "a") as f:
         f.write("Current " + type + " Information for " + val_userName + newline)

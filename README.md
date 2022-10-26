@@ -85,13 +85,13 @@ The three credit date databases are:
 #### < report.py >
 This file is responsible for creating the `report.txt` file that will have information on the **Spending Limit** and **General Re-Payment Date**
 
-| Functions                                                                                                       | Description                                                                                                   |
-|-----------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
-| `reportGenerate(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)`          | This function is the main function that is responsible for creating the report                                |
-| `generateHeader(val_userName, val_tableName)`                                                                   | This function is responsible for creating the title/header details in the report                              |
-| `printMainDB(val_tableName, val_userName)` <br/> getCreditInfo(val_tableName, val_userName, dict, type) <br/>  getCreditHeadersInDB(val_tableName, type) | These functions are responsible for retrieving data/header information from the credit tables in the database |
-| `convertTupToStringMod(dict)`                                                                                                          | This function converts the input dictionary from tuples to a list of strings                                  |
-| `printValBesideHeader(val_userName, credit_header_info, credit_dbinfo, type)`                                                                                                          | This function will allow the headers and values to be printed side by side in the main report                 |
+| Functions                                                                                                       | Description                                                                                                |
+|-----------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
+| `reportGenerate(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict)`          | This function is the main function that is responsible for creating the report                             |
+| `generateHeader(val_userName, val_tableName)`                                                                   | This function is responsible for creating the title/header details in the report                           |
+| `printMainDB(val_tableName, val_userName)` <br/> getCreditInfo(val_tableName, val_userName, dict, type) <br/>  getCreditHeadersInDB(val_tableName, type) | This function is responsible for retrieving data/header information from the credit tables in the database |
+| `convertTupToStringMod(dict)`                                                                                                          | This function converts the input dictionary from tuples to a list of strings                               |
+| `printValBesideHeader(val_userName, credit_header_info, credit_dbinfo, type)`                                                                                                          | This function will allow the headers and values to be printed side by side in the main report              |
 
 ## <ins> Product Usage
 When you boot up the product, you will be prompted with the following 5 responses.
