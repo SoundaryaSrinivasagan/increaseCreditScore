@@ -4,12 +4,17 @@
 # Version: Version_1
 # Description: This script will help create the credit databases which consists of all the credit information for all the members of the family database
 
+# We need this python package to be able to communicate with the PostgreSQL Database
 import psycopg2
 from mainDB import *
 from report import *
 from dateDB import *
 
-#########################################################################
+########################################################################################################################
+# Description: This function collect credit product information from the user and stores the results into three dictionaries (credit card, line of credit, other credit products)
+# Input: creditCardDict, creditLineOfCreditDict, creditOtherDict [ Dict of Strings: Ints] = These dictionaries will contain information that the user entered in this section
+# Output: The three dicts (creditCardDict, creditLineOfCreditDict, creditOtherDict) will be updated with the user information
+########################################################################################################################
 def creditDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict):
 	print("**********************************************************************************")
 	print("The following section will collect details on your credit limit from all sources")
@@ -39,11 +44,15 @@ def creditDetails(creditCardDict, creditLineOfCreditDict, creditOtherDict):
 		val_otherCredit = input("Do you have any other credit products? [ y | n ]   ")
 	print(".............................................................................................")
 
-	#print(creditCardDict)
-	#print(creditLineOfCreditDict)
-	#print(creditOtherDict)
+########################################################################################################################
+# Description: This function implements the CREATE TABLE SQL command
+# Input: val_tableName [String] = Name of the table entered by the user
+#    	 val_userName [String] = Name of user
+#        dict [Dict of Strings: Ints] = Refers to one of the following dicts (creditCardDict, creditLineOfCreditDict, creditOtherDict) with the user credit information
+#        type [String] = This aids in naming the tables with the following format (groupName_type - for ex: groupName_creditcard)
+# Output: Creates the three credit tables
+########################################################################################################################
 
-#########################################################################
 def creditTableDB(val_tableName, val_userName, dict, type):
 	local_cursor = connectToDB()
 
@@ -73,8 +82,14 @@ def creditTableDB(val_tableName, val_userName, dict, type):
 	# Create a table in PostgreSQL database
 	local_cursor.execute(sqlCreateTable)
 
-
-#########################################################################
+########################################################################################################################
+# Description: This function implements the INSERT INTO SQL command
+# Input: tableName [String] = Name of the table entered by the user
+#     	 val_userName [String] = Name of user
+#        dict [Dict of Strings: Ints] = Refers to one of the following dicts (creditCardDict, creditLineOfCreditDict, creditOtherDict) with the user credit information
+#        type [String] = This aids in naming the tables with the following format (groupName_type - for ex: groupName_creditcard)
+# Output: Inputs values into the three credit tables
+########################################################################################################################
 def insertValToIdUser_Credit(tableName, val_userName, dict, type):
 	local_cursor = connectToDB()
 	key = list(dict.keys())
@@ -109,7 +124,14 @@ def insertValToIdUser_Credit(tableName, val_userName, dict, type):
 	postgres_insert_query = postgres_insert_query_1T + postgres_insert_query_2T + postgres_insert_query_3T + postgres_insert_query_2TT
 	local_cursor.execute(postgres_insert_query)
 
-#########################################################################
+########################################################################################################################
+# Description: This function implements the ALTER TABLE SQL command
+# Input: tableName [String] = Name of the table entered by the user
+#     	 user [String] = Name of user
+#        dict [Dict of Strings: Ints] = Refers to one of the following dicts (creditCardDict, creditLineOfCreditDict, creditOtherDict) with the user credit information
+#        type [String] = This aids in naming the tables with the following format (groupName_type - for ex: groupName_creditcard)
+# Output: Updates the credit tables by adding more columns if required
+########################################################################################################################
 def updateCreditDBOtherUser(tableName, userName, dict, type):
 	local_cursor = connectToDB()
 
@@ -125,7 +147,7 @@ def updateCreditDBOtherUser(tableName, userName, dict, type):
 
 	for keys in dict:
 		# Check to see if key exists already in database headers
-		results = getCreditHeadersInDB(val_tableName, type)
+		results = getCreditHeadersInDB(tableName, type)
 		if (keys not in results):
 			type = """ text """
 			# space = """  """
@@ -140,10 +162,13 @@ def updateCreditDBOtherUser(tableName, userName, dict, type):
 	print(postgres_insert_query)
 	local_cursor.execute(postgres_insert_query)
 
-	# Update Table with their respective values
-
-
-#########################################################################
+########################################################################################################################
+# Description: This function will call the creditTableDB() and insertValToIdUser_Credit functions
+# Input: val_tableName [String] = Name of the table entered by the user
+#     	 val_userName [String] = Name of user
+#        creditCardDict, creditLineOfCreditDict, creditOtherDict [ Dict of Strings: Ints] = These dictionaries will contain information that the user entered in this section
+# Output: Master function to create the three credit tables and insert user values into them
+########################################################################################################################
 def mapCreditToUser(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict):
 
 	# This will help identify which DB the action should take place in
