@@ -9,6 +9,9 @@ a $1000 credit limit with the National Bank of Canada, you are recommended by *T
 Moreover, the General Re-Payment Date feature would take information on when the statement generates for each credit product and compute
 a general day based on a 15-day grace period that the user can pay off their full balance or atleast make minimum payments. This would allow the user
 to remember 1-2 days every month instead of multiple days based off their credit products.
+    
+**Sample Report**: [report.txt](https://github.com/SoundaryaSrinivasagan/increaseCreditScore/files/9839802/report.txt)
+
 
 **Sample File**: 
 
