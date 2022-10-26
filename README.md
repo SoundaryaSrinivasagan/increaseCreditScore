@@ -13,8 +13,6 @@ to remember 1-2 days every month instead of multiple days based off their credit
 **Sample Report**: [report.txt](https://github.com/SoundaryaSrinivasagan/increaseCreditScore/files/9839802/report.txt)
 
 
-**Sample File**: 
-
 __Targeted User:__ The product will be really useful for people with low to no credit or people that just want to increase their score in general.
 The two major features of this product would one allow the user to condition themselves a new spending limit based on the 
 recommended 30% limit in each credit product and two have a general day in each month that they user should remember to pay 
