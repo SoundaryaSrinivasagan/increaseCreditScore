@@ -4,8 +4,12 @@
 # Version: Version_1
 # Description: This script will help create the date feature for this program, so, we can later give a customized date to pay all credit balences
 
+# We need this python package to be able to communicate with the PostgreSQL Database
 import psycopg2
+
+# Imports the regular expressions package to help us match patterns
 import re
+
 from mainDB import *
 from creditDB import *
 from report import *
@@ -30,6 +34,13 @@ creditCardDict_date = {}
 creditLineOfCreditDict_date = {}
 creditOtherDict_date = {}
 
+########################################################################################################################
+# Description: This function will collect details on your when your statement generates for all your credit sources
+# Input: val_tableName [String] = Name of the table entered by the user
+#     	 val_userName [String] = Name of user
+#        creditCardDict, creditLineOfCreditDict, creditOtherDict [ Dict of Strings: Ints] = These dictionaries will contain information that the user entered in this section
+# Output: Collects dates that the credit payments are due and stores them into the three dicts (creditCardDict, creditLineOfCreditDict, creditOtherDict)
+########################################################################################################################
 def dateDetails(val_tableName, val_userName, creditCardDict, creditLineOfCreditDict, creditOtherDict):
     print("*************************************************************************************************************")
     print("The following section will collect details on your when your statement generates for all your credit sources")
@@ -103,7 +114,14 @@ def dateDetails(val_tableName, val_userName, creditCardDict, creditLineOfCreditD
             print(i + " = " + j + " -----> " + generate)
             countt = countt + 1
 
-
+########################################################################################################################
+# Description: This function extracts all the credit data from the tables and outputs them as a list of tuples
+# Input: val_tableName [String] = Name of the table entered by the user
+#     	 val_userName [String] = Name of user
+#        dict [Dict of Strings: Ints] = Refers to one of the following dicts (creditCardDict, creditLineOfCreditDict, creditOtherDict) with the user credit information
+#        type [String] = This aids in naming the tables with the following format (groupName_type - for ex: groupName_creditcarddate)
+# Output: Collects all data from table in db and returns them as a list of tuples
+########################################################################################################################
 def getCreditInfoFromDict(val_tableName, val_userName, dict, type):
     local_cursor = connectToDB()
     sql_id = """SELECT * FROM """ + val_tableName + """_""" + type + """ WHERE id = """ + """ \' """ + val_userName + """ \' """ + """ ; """
@@ -112,10 +130,26 @@ def getCreditInfoFromDict(val_tableName, val_userName, dict, type):
 
     return results
 
+########################################################################################################################
+# Description: This function will call the creditTableDB() and insertValToIdUser_Credit functions
+# Input: val_tableName [String] = Name of the table entered by the user
+#     	 val_userName [String] = Name of user
+#        dict [Dict of Strings: Ints] = Refers to one of the following dicts (creditCardDict, creditLineOfCreditDict, creditOtherDict) with the user credit information
+#        type [String] = This aids in naming the tables with the following format (groupName_type - for ex: groupName_creditcarddate)
+# Output: Creates and inserts the values into the credit date tables using the three dicts(creditCardDict, creditLineOfCreditDict, creditOtherDict)
+########################################################################################################################
 def createTable(val_tableName, val_userName, dict, type):
     creditTableDB(val_tableName, val_userName, dict, type)
     insertValToIdUser_Credit(val_tableName, val_userName, dict, type)
 
+########################################################################################################################
+# Description: This functions is responsible for inserting values into the credit tables
+# Input: val_tableName [String] = Name of the table entered by the user
+#     	 val_userName [String] = Name of user
+#        dict [Dict of Strings: Ints] = Refers to one of the following dicts (creditCardDict, creditLineOfCreditDict, creditOtherDict) with the user credit information
+#        type [String] = This aids in naming the tables with the following format (groupName_type - for ex: groupName_creditcarddate)
+# Output: Inserts the values into the credit date tables using the three dicts(creditCardDict, creditLineOfCreditDict, creditOtherDict)
+########################################################################################################################
 def MapVal(val_tableName, val_userName, dict, type):
     # Query to check whether the table already exits
     local_cursor = connectToDB()
@@ -138,6 +172,9 @@ def MapVal(val_tableName, val_userName, dict, type):
         # Insert values into rows
         insertDataDBOtherPayments(val_tableName, val_userName, dict, type)
 
+
+#***********************************************************************************************************************#
+############# Version 2 Fix
 ## RESOLVE IMPORT ERROR AND TAKE OFF THE FOLLOWING FUNCTIONS FROM BELOW
 #########################################################################
 def creditTableDB(val_tableName, val_userName, dict, type):

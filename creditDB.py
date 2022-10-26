@@ -6,6 +6,7 @@
 
 # We need this python package to be able to communicate with the PostgreSQL Database
 import psycopg2
+
 from mainDB import *
 from report import *
 from dateDB import *
