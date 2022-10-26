@@ -10,6 +10,8 @@ Moreover, the General Re-Payment Date feature would take information on when the
 a general day based on a 15-day grace period that the user can pay off their full balance or atleast make minimum payments. This would allow the user
 to remember 1-2 days every month instead of multiple days based off their credit products.
 
+**Sample File**: 
+
 __Targeted User:__ The product will be really useful for people with low to no credit or people that just want to increase their score in general.
 The two major features of this product would one allow the user to condition themselves a new spending limit based on the 
 recommended 30% limit in each credit product and two have a general day in each month that they user should remember to pay 

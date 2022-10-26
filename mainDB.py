@@ -4,14 +4,19 @@
 # Version: Version_1
 # Description: This script will help create the main database that will store all the 'family's' information
 
+# We need this python package to be able to communicate with the PostgreSQL Database
 import psycopg2
 
-########################################################################
+########################################################################################################################
+# Description: This function returns a cursor which can be used to initiate a connection to the database and perform SQL operations
+# Input:
+# Output: Returns cursor which is used throughout script to connect to DB and execute SQL statements
+########################################################################################################################
 def connectToDB():
 	# Define our connection string
 	conn_string = "host='localhost' dbname='increasecreditscore' user='soundaryasrinivasagan' password='secret'"
 
-	# Get a connection, if a connection cannt be made, an exception will be raised here
+	# Get a connection, if a connection can't be made, an exception will be raised here
 	conn = psycopg2.connect(conn_string)
 
 	# conn.cursor will return a cursor object, you can use this cursor to perform queries
@@ -20,7 +25,12 @@ def connectToDB():
 
 	return cursor
 
-########################################################################
+########################################################################################################################
+# Description: This function implements the CREATE TABLE SQL command
+# Input: name_Table [String] = Name of the table entered by the user
+# 		 dictOfValues [Dict of Strings: Ints] = Dict of values containing user input
+# Output: Creates main table which stores all bills and their payment amount
+########################################################################################################################
 def connectDBCreateTable(name_Table, dictOfValues):
 	local_cursor = connectToDB()
 
@@ -50,7 +60,13 @@ def connectDBCreateTable(name_Table, dictOfValues):
 	# Create a table in PostgreSQL database
 	local_cursor.execute(sqlCreateTable)
 
-#########################################################################
+########################################################################################################################
+# Description: This function implements the INSERT INTO SQL command
+# Input: tableName [String] = Name of the table entered by the user
+# 		 name [String] = Name of user
+# 		 carInsurance, gym, internet, phone, loans [INT] = Values entered by user for each payment
+# Output: Inserts these values into DB table
+########################################################################################################################
 def insertDataDB(tableName, name, carInsurance, gym, internet, phone, loans):
 	local_cursor = connectToDB()
 	postgres_insert_query = """ INSERT INTO """ + tableName + """(id, carInsurance, gym, internet, phone, loans) 
@@ -58,7 +74,13 @@ def insertDataDB(tableName, name, carInsurance, gym, internet, phone, loans):
 
 	local_cursor.execute(postgres_insert_query)
 
-#########################################################################
+########################################################################################################################
+# Description: This function implements the UPDATE SQL command
+# Input:tableName [String] = Name of the table entered by the user
+# 	    user [String] = Name of user
+# 		dictOfValues [Dict of Strings: Ints] = Dict of values containing user input
+# Output: Updates other payments in the main DB as entered by the user
+########################################################################################################################
 def insertDataDBOtherPayments(tableName, user, dictOfValues):
 	local_cursor = connectToDB()
 
@@ -82,7 +104,12 @@ def insertDataDBOtherPayments(tableName, user, dictOfValues):
 	postgres_insert_query = postgres_insert_query_1T + postgres_insert_query_2T + postgres_insert_query_3T + postgres_insert_query_4T
 	local_cursor.execute(postgres_insert_query)
 
-#########################################################################
+########################################################################################################################
+# Description: This function returns all the column headers in the database table as a list of tuple
+# Input: val_tableName [String] = Name of the table entered by the user
+# 		 val_userName [String] = Name of user
+# Output: Results returns all the column headers of the database table as a list of tuples
+########################################################################################################################
 # Print values in table
 def printValuesInTable(val_tableName, val_userName):
 	local_cursor = connectToDB()
@@ -92,7 +119,13 @@ def printValuesInTable(val_tableName, val_userName):
 
 	return results
 
-#########################################################################
+########################################################################################################################
+# Description: This function implements the ALTER TABLE SQL command
+# Input: tableName [String] = Name of the table entered by the user
+#  		 user [String] = Name of user
+#        otherItemsList [Dict of Strings: Ints] = Stores the other payments
+# Output: Alters the main DB table with other payments that the user may have
+########################################################################################################################
 def alterTableToAddMoreColumns(tableName, user, otherItemsList):
 	local_cursor = connectToDB()
 
@@ -134,8 +167,13 @@ def alterTableToAddMoreColumns(tableName, user, otherItemsList):
 	# Update values for all the keys in the dict
 	insertDataDBOtherPayments(tableName, user, otherItemsList)
 
-
-#########################################################################
+########################################################################################################################
+# Description: This function collects information on bill payments from the user and uses the other functions in this document to create/update the main table
+# Input: val_tableName [String] = Name of the table entered by the user
+#   	 val_userName [String] = Name of user
+#        flag [Boolean] = If True it will create a new table, if false, it will alter the current table in the db
+# Output:
+########################################################################################################################
 def query_billsCollect(val_tableName, val_userName, flag):
 	# Dictionary to add all other types of payments
 	otherItemsList = {}
